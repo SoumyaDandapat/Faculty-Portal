@@ -1,9 +1,10 @@
 psql:
 	database name="dbms"
 		tables:
-			employees ( eid,name,pass,gender,dob)
+			employees ( eid,name,password,dept,leaves_left)
 				trigger: 
 					new password format
+					On insertion eid and laves_left are given fixed values
 				procedure:
 					check password
 

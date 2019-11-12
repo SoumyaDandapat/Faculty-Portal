@@ -3,7 +3,7 @@
 {% block content %}
 
 
-    <!-- Optional JavaScript -->
+    Optional JavaScript
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
         integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
@@ -14,17 +14,18 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
-    <form action="http://localhost:5000/login" method="post">
+    <form action="./login" method="post">
         <div class="form-row">
             <div class="col-3">
-                <label for="email">UID:</label>
-                <input type="text" class="form-control" id="email" name="uid">
+                <label for="eid">eid:</label>
+                <input type="text" class="form-control" id="eid" name="eid">
             </div>
         </div>
+        
         <div class="form-row">
             <div class="col-3">
                 <label for="pwd">Password:</label>
-                <input type="password" class="form-control" id="pwd" name="pwd">
+                <input type="password" class="form-control" id="pwd" name="pass">
             </div>
         </div>
         <div>
@@ -36,12 +37,12 @@
             </div>
             
             <div class="col-1">
-                <button type="submit" class="btn btn-primary"> Submit_ </button>
+                <button type="submit" class="btn btn-primary"> Submit</button>
             </div>
         </div>
         
     </form>
-    <form action="http://localhost:5000/register" method="GET">
+    <form action="./register" method="GET">
     <br>    
     <div class="row">
         

@@ -1,0 +1,23 @@
+psql:
+	database name="dbms"
+		tables:
+			employees ( eid,name,pass,gender,dob)
+				trigger: 
+					new password format
+				procedure:
+					check password
+
+			eidmax(num)
+				trigger:
+					increment on each access
+			
+
+
+nosql:
+	database name="dbms"
+		collection:
+			personal_profile ()
+
+
+
+deleted ke baare me baad me socho

@@ -1,0 +1,15 @@
+dashboard:
+    button:
+        go to personal profile || 
+        new leave application
+        leave application status
+
+    text:
+        leaves from this year remaining
+        leaves from next year remaining
+
+-------------------------------------------------
+
+registration succesfull
+
+    

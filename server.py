@@ -6,6 +6,7 @@ from database.psql import psql
 app = Flask(__name__)
 pobj= None
 nobj=None
+app.secret_key = 'the random string'
 
 # mydb = mysql.connector.connect(host="localhost",user="postgres",passwd="123",port=5432)
 
@@ -13,6 +14,7 @@ def initializer():
     global pobj,nobj
     pobj=psql()
     nobj=nosql()
+    pobj.initializer()
 
 @app.route("/",methods=["GET"])
 def root():
@@ -26,11 +28,20 @@ def login():
     
     else:
         ans=request.form.to_dict()
+        if(ans["eid"].isnumeric()!=True):
+            return redirect(url_for("login"))
         if(pobj.verify_user(ans)):
             session['username']=ans["eid"]
             return redirect(url_for("dashboard"))
         else:
-            return redirect(url_for("login.html"))
+            return redirect(url_for("login"))
+
+@app.route("/logout",methods=["POST","GET"])
+def logout():
+    if 'username' in session:
+        session.pop('username',None)
+    return redirect(url_for("login"))
+
 
 @app.route("/register",methods=['POST','GET'])
 def register_page():
@@ -38,9 +49,9 @@ def register_page():
         return render_template('register.html')
     else:
         input=request.form.to_dict()
-        eid=psql.insert(data=input)
-        return render_template("registration_successfull.html",eid=eid)
-        
+        eid=pobj.insert(data=input)
+        # return render_template("registration_successfull.html",eid=eid)
+        return str(eid)
 
 @app.route("/dashboard",methods=["GET","POST"])
 def dashboard():

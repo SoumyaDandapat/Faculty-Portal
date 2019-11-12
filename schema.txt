@@ -16,7 +16,7 @@ psql:
 nosql:
 	database name="dbms"
 		collection:
-			personal_profile ()
+			personal_profile (NAME,CONTACT,)
 
 
 

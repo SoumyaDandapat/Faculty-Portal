@@ -74,4 +74,9 @@ create table leave_database(
     foreign key(eid) references employees(eid)
 );
 
+create table director(
+    director_id int,
+    foreign key(director_id) references employees(eid)
+);
+
 

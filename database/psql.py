@@ -19,10 +19,11 @@ class psql:
 
     def insert(self,data):
         self.conn.commit()
-        self.cur.execute("select * from eidmax;")
-        row = self.cur.fetchone()
-        new_eid=row[0]   
-        tuple=(new_eid,data["name"],data["pass"],data["gender"],data["dob"])
+        self.cur.execute("select eidmax from constants;")
+        new_eid = self.cur.fetchone()[0]
+        self.cur.execute("select leaves from constants;")
+        leaves = self.cur.fetchone()[0]   
+        tuple=(new_eid,data["dept"],data["pass"],data["gender"],data["dob"],leaves)
         self.cur.execute("INSERT INTO employees values{}".format(tuple))
         self.cur.execute("UPDATE eidmax set num=num+1 ")
         self.conn.commit()
@@ -69,11 +70,9 @@ class psql:
 
 
     def verify_user(self,data):
-        # print(data)
-        temp=int(data["eid"],10)
-        ans=self.cur.execute("SELECT COUNT(*) FROM employees where eid=%s and pass=%s",(temp,data["pass"]))
+        
+        ans=self.cur.execute("SELECT COUNT(*) FROM employees where eid=%s and pass=%s",(data["eid"],data["pass"]))
         ans=self.cur.fetchone()
-        # print(ans)
         if ans[0] == 1:
             return True
         return False

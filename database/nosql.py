@@ -15,32 +15,35 @@ class nosql:
         database=client["dbms"]
         self.pprofile=database["personal_profile"]        
 
-    def get_data(self,input):
-        ans=self.pprofile.find(input)
+    def get_data_pretty(self,input):
+        ans=self.pprofile.find_one(input,{"_id":0,"eid":0})
         result=[]
         for row in ans:
-            result.append(row)
+            temp=[]
+            temp.append(row)
+            temp.append(ans[row])
+            result.append(temp)
         return result
 
-    def get_data_pretty(self,input):
-        ans=self.pprofile.find(input,{"_id":0})
-        ans=self.cursor_to_list(ans)        
+    def get_data(self,input):
+        ans=self.pprofile.find_one(input,{"_id":0,"eid":0})
+        # ans=self.cursor_to_list(ans)        
         return ans
 
     def get_list_pretty(self):
-        ans=self.pprofile.find(,{"_id":0})
+        ans=self.pprofile.find({},{"eid":1,"name":1})
         ans=self.cursor_to_list(ans)        
         return ans
     
-    def get_list(self):
-        ans=self.pprofile.find()
-        result=[]
-        for row in ans:
-            # temp=[]
-            # temp.append(row["eid"])
-            # temp.append(row["contact"])
-            result.append(row["eid"])
-        return result
+    # def get_list(self):
+    #     ans=self.pprofile.find({},{"eid":1,"name":1})
+    #     result=[]
+    #     for row in ans:
+    #         # temp=[]
+    #         # temp.append(row["eid"])
+    #         # temp.append(row["contact"])
+    #         result.append(row["eid"])
+    #     return result
 
 
     def update_data(self,condition,new):

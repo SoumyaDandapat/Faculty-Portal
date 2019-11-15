@@ -6,7 +6,7 @@ from database.psql import psql
 app = Flask(__name__)
 pobj= None
 nobj=None
-app.secret_key = 'the random string'
+app.secret_key = 'qwertyuiopqazwsx'
 
 # mydb = mysql.connector.connect(host="localhost",user="postgres",passwd="123",port=5432)
 
@@ -21,51 +21,66 @@ def initializer():
 #     return render_template("root.html")
 #     # return redirect(url_for("login"))
 
+def filter_dictionary_personal_profile(old,new_html):
+
+    new={}
+    ## extracting dictionary from html
+    siz=(int((len(new_html)/2))-1)
+    for x in range(siz):
+                h=new_html["head"+str(x)]
+                p=new_html["par"+str(x)]
+                if(h=="" or p=="" or h=="_id" or h=="eid"):
+                    continue
+                new[h]=p
+    ###
+    uns={}
+    upd={}
+    for o in old:
+        if o not in new:
+            uns[o]=1
+            continue
+        
+    for n in new:
+        if n not in old or old[n]!=new[n]:
+            upd[n]=new[n]
+    
+    newh=new["newh"]
+    newp=new["newp"]
+    if(newh!="" and newp!="" and newh!="_id" and newh!="eid"):
+        upd[newh]=newp
+
+    return (uns,upd) 
+
+
 @app.route("/",methods=["GET","POST"])
 def public():
-    # names=nobj.get_
     return render_template("root.html")
 
-@app.route("/public<num>",methods=["GET"])
+@app.route("/public",methods=["GET"])
 def root(num):
+    res=nobj.get_list_pretty()
+    return render_template("public_list.html",lis=res)
 
-    res=nobj.get_list()
-
-    if(num=="x"):
-        return render_template("public_list.html",lene=len(res),lis=res)
-    else:
-        num=int(num,10)
-        ans=nobj.get_data()
-        eid=res[num]["eid"]
-        query={"eid":eid}
-        result=nobj.get_data(query)[0]
-
-        lis=[]
-        for x in result:
-            if(x=="_id" or x=="eid"):
-                continue
-            temp=[]
-            temp.append(x)
-            temp.append(result[x])
-            lis.append(temp)
-
-        return render_template("public_profile.html",lene=len(lis),lis=lis)
-
-
+@app.route("/public/<num>")
+def public_personal_profile(num):
+    query={"eid":int(num,10)}
+    result=nobj.get_data_pretty(query)
+    return render_template("public_profile.html",lene=len(dict),dict=result)
 
 
 @app.route("/login",methods=["GET","POST"])
 def login():
-    if request.method=="GET":
-        
+    if request.method=="GET":        
         return render_template("login.html")
     
     else:
         ans=request.form.to_dict()
         if(ans["eid"].isnumeric()!=True):
             return redirect(url_for("login"))
+        eid=int(ans["eid"],10)
+        ans["eid"]=eid
         if(pobj.verify_user(ans)):
-            session['username']=int(ans["eid"],10)
+            session['username']=eid
             return redirect(url_for("dashboard"))
         else:
             return redirect(url_for("login"))
@@ -84,7 +99,7 @@ def register_page():
     else:
         input=request.form.to_dict()
         eid=pobj.insert(data=input)
-        nobj.insert_data({"eid":eid})
+        nobj.insert_data({"eid":eid,"name":input["name"]})
         return render_template("registration_successfull.html",eid=str(eid))
 
 @app.route("/delete",methods=["GET","POST"])
@@ -94,68 +109,34 @@ def delete():
     return redirect(url_for("login"))
 
 
-@app.route("/dashboard",methods=["GET","POST"])
+@app.route("/dashboard",methods=["GET"])
 def dashboard():
     if 'username' in session:
-        if(request.method=="GET"):
-            return render_template("dashboard.html")
-        
-        else:
-            if(request.form.post["action"]=="Personal profile"):
-                return redirect(url_for("personal_profile"))
-            elif(request.form.post["action"]=="new leave application"):
-                return redirect(url_for("new_leave"))
-            elif(request.form.post["action"]=="application status"):
-                return redirect(url_for("application_status"))
+        return render_template("dashboard.html")
     else:
         return redirect(url_for("login"))
 
-@app.route("/personal_profile",methods=["GET","POST"])
+@app.route("/dashboard/personal_profile",methods=["GET","POST"])
 def personal_profile():
     if 'username' in session:
         eid=session['username']
+
         if request.method=="GET":
             query={"eid":eid}
-            result=nobj.get_data(query)[0]
-
-            lis=[]
-            for x in result:
-                if(x=="_id" or x=="eid"):
-                    continue
-                temp=[]
-                temp.append(x)
-                temp.append(result[x])
-                lis.append(temp)
-            return render_template("personal_profile.html",dict=lis,len=len(lis))
+            result=nobj.get_data_pretty(query)
+            return render_template("personal_profile.html",dict=result,len=len(result))
         else:
             query={"eid":eid}
-            result=nobj.get_data(query)[0]
+            result=nobj.get_data(query)
             new=request.form.to_dict()
-            siz=(int((len(new)/2))-1)
-            uns={}
-            dit={}
-
-            #extraction new dictionary
-            for x in range(siz):
-                h=new["head"+str(x)]
-                p=new["par"+str(x)]
-                if(h=="" or p=="" or h=="_id" or h=="eid"):
-                    continue
-                
-                dit[h]=p
-            #extracting unsetting variables
-            for x in result:
-                if(x=="_id" or x=="eid"):
-                    continue
-                if x not in dit:
-                    uns[x]=1
-
+            (uns,upd)=filter_dictionary_personal_profile(result,new)
+            
             if(len(uns)!=0):
                 nobj.unset_field(query,uns)
-
-            if(new["newh"]!="" or new["newp"]!=""):
-                dit[new["newh"]]=new["newp"]
-            nobj.update_data(query,dit)
+            
+            if(len(upd)!=0):
+                nobj.update_data(query,upd)
+            
 
             if(request.form["sub"]=="sub"):
                 return redirect(url_for("dashboard"))

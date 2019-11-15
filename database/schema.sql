@@ -64,4 +64,4 @@ create table director(
     foreign key(director_id) references employees(eid)
 );
 
-
+insert into const values(2017000,1,10);

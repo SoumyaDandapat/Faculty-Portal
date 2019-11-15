@@ -10,6 +10,16 @@ dashboard:
 
 -------------------------------------------------
 
-registration succesfull
+registration_succesfull
+    button:
+        go to login
+    text    
+        display eid
 
+---------------------------------------
+personal_profile
+------------------------------------------
+new_application
+------------------------------------------
+application_history
     

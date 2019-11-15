@@ -16,9 +16,43 @@ def initializer():
     nobj=nosql()
     pobj.initializer()
 
-@app.route("/",methods=["GET"])
-def root():
-    return redirect(url_for("login"))
+# @app.route("/",methods=["GET"])
+# def root():
+#     return render_template("root.html")
+#     # return redirect(url_for("login"))
+
+@app.route("/",methods=["GET","POST"])
+def public():
+    # names=nobj.get_
+    return render_template("root.html")
+
+@app.route("/public<num>",methods=["GET"])
+def root(num):
+
+    res=nobj.get_list()
+
+    if(num=="x"):
+        return render_template("public_list.html",lene=len(res),lis=res)
+    else:
+        num=int(num,10)
+        ans=nobj.get_data()
+        eid=res[num]["eid"]
+        query={"eid":eid}
+        result=nobj.get_data(query)[0]
+
+        lis=[]
+        for x in result:
+            if(x=="_id" or x=="eid"):
+                continue
+            temp=[]
+            temp.append(x)
+            temp.append(result[x])
+            lis.append(temp)
+
+        return render_template("public_profile.html",lene=len(lis),lis=lis)
+
+
+
 
 @app.route("/login",methods=["GET","POST"])
 def login():
@@ -31,7 +65,7 @@ def login():
         if(ans["eid"].isnumeric()!=True):
             return redirect(url_for("login"))
         if(pobj.verify_user(ans)):
-            session['username']=ans["eid"]
+            session['username']=int(ans["eid"],10)
             return redirect(url_for("dashboard"))
         else:
             return redirect(url_for("login"))
@@ -50,8 +84,15 @@ def register_page():
     else:
         input=request.form.to_dict()
         eid=pobj.insert(data=input)
-        # return render_template("registration_successfull.html",eid=eid)
-        return str(eid)
+        nobj.insert_data({"eid":eid})
+        return render_template("registration_successfull.html",eid=str(eid))
+
+@app.route("/delete",methods=["GET","POST"])
+def delete():
+    nobj.clear_data()
+    pobj.clear_data()
+    return redirect(url_for("login"))
+
 
 @app.route("/dashboard",methods=["GET","POST"])
 def dashboard():
@@ -71,11 +112,57 @@ def dashboard():
 
 @app.route("/personal_profile",methods=["GET","POST"])
 def personal_profile():
-    if request.method=="GET":
-        return render_template("personal_profile.html")
+    if 'username' in session:
+        eid=session['username']
+        if request.method=="GET":
+            query={"eid":eid}
+            result=nobj.get_data(query)[0]
+
+            lis=[]
+            for x in result:
+                if(x=="_id" or x=="eid"):
+                    continue
+                temp=[]
+                temp.append(x)
+                temp.append(result[x])
+                lis.append(temp)
+            return render_template("personal_profile.html",dict=lis,len=len(lis))
+        else:
+            query={"eid":eid}
+            result=nobj.get_data(query)[0]
+            new=request.form.to_dict()
+            siz=(int((len(new)/2))-1)
+            uns={}
+            dit={}
+
+            #extraction new dictionary
+            for x in range(siz):
+                h=new["head"+str(x)]
+                p=new["par"+str(x)]
+                if(h=="" or p=="" or h=="_id" or h=="eid"):
+                    continue
+                
+                dit[h]=p
+            #extracting unsetting variables
+            for x in result:
+                if(x=="_id" or x=="eid"):
+                    continue
+                if x not in dit:
+                    uns[x]=1
+
+            if(len(uns)!=0):
+                nobj.unset_field(query,uns)
+
+            if(new["newh"]!="" or new["newp"]!=""):
+                dit[new["newh"]]=new["newp"]
+            nobj.update_data(query,dit)
+
+            if(request.form["sub"]=="sub"):
+                return redirect(url_for("dashboard"))
+            else:
+                return redirect(url_for("personal_profile"))
     else:
-        # save the updated prfile
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("login"))
         
 @app.route("/new_application",methods=["GET","POST"])
 def new_application():

@@ -56,12 +56,24 @@ class psql:
         except:
             print(3)
 
+    def clear_data(self):
+        self.cur.execute("delete from eidmax ")
+        self.conn.commit()
+        self.cur.execute("delete from employees")
+        self.conn.commit()
+        try:    
+            self.cur.execute("INSERT INTO eidmax values(0)")
+            self.conn.commit()
+        except:
+            print(3)
+
+
     def verify_user(self,data):
-        print(data)
+        # print(data)
         temp=int(data["eid"],10)
         ans=self.cur.execute("SELECT COUNT(*) FROM employees where eid=%s and pass=%s",(temp,data["pass"]))
         ans=self.cur.fetchone()
-        print(ans)
+        # print(ans)
         if ans[0] == 1:
             return True
         return False

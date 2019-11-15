@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+
+
+
+</script>
+<!-- <button id="add" name="add" onclick="test()" style="background-color:aqua"> add new paragraph</button> -->
+
+<form id="frm" action="./personal_profile" method="post">
+
+  {% for i in range(len) %}
+  <p name="par" id="par">
+    <br>
+    <input type="text" style="font-size:20px;color:black;font-style:bold;background-color:aliceblue;" name="head{{i}}" value="{{dict[i][0]}}">
+    <br><br>
+    <textarea input type="text" style="font-size:15px;color:rgb(49, 41, 41); block-size: 90px;width: 800px;background-color:aliceblue;" name="par{{i}}">{{dict[i][1]}}</textarea>
+    <br>    
+  </p> 
+
+  {% endfor %}
+
+  <p name="new" id="new" >
+      <br>
+      <input type="text" style="font-size:18px;color:black;font-style:bold;background-color: lightcyan" name="newh" placeholder="enter new data if required">
+      <br><br>
+      <textarea input type="text" style="font-size:15px;color:grey; block-size: 90px;width: 800px;background-color:lightcyan;" name="newp" placeholder="leave it blank if not required" ></textarea>
+      <br>    
+    </p>
+<input class="btn btn-primary" type="submit" name="sub" value="SUBMIT" ">
+<input  class="btn btn-primary" type="submit" name="sub" value="ADD NEW PARAGRAPH" >
+
+</form>
+
+<!-- <p name="base">
+<h1 name="h" contenteditable="true">
+    hi
+</h1>
+<p1 name="p" contenteditable="true">
+    apargraph
+</p1>
+</p> -->
+
+{% endblock %}

@@ -1,0 +1,47 @@
+{%extends "base.html" %}
+ 
+ {%block content%}
+ <!-- <!DOCTYPE html>
+ <html lang="en">
+ <head>
+   <title>Bootstrap Theme Simply Me</title>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+ </head>
+ <body> -->
+ 
+ 
+ {% for i in range(lene)%} 
+ 
+ <div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg-4">
+ <!-- <div class="card">
+        <div class="card-body">
+            {{lis[i]}}
+            <button style="al" onclick=""location.href='../public{{i}}'"">VIEW PROFILE</button>
+        </div>
+        <br>
+</div> -->
+        
+        <ul class="list-group">
+            <li class="list-group-item">
+                    <!-- <div class="card"> -->
+                            <div class="card-body">test</div>
+                            <span class="badge"  type="button" onclick="location.href='../public{{i}}'">VIEW PROFILE
+                            </span>
+                    <!-- </div> -->
+            </li>
+        </ul> 
+    </div>
+</div>
+
+
+ {% endfor%}
+ </body>
+ </html> 
+
+ {%endblock%}

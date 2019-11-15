@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+{% block content %}
+    <br><br><br><br><br>
+    <div class="container">
+            <h2>Hello {{name}}</h2>
+    </div>
+    <br><br>
+    
+    
+    <div class="container">
+            <div class="row">
+                    <div class="col-lg-9">
+                            <div class="well col-lg-4">Leave days left this year {{thisyear}}</div>
+                        </div>
+                <div class="col-lg-3">
+                <div class="panel panel-info">
+                  <div class="panel-heading">
+                    <div class="row">
+                      <div class="col-xs-6">
+                        <i class="fa fa-address-card-o fa-5x"></i>
+                      </div>
+                      <div class="col-xs-6 text-right">
+                        <p class="announcement-text"> User Profile </p>
+                      </div>
+                    </div>
+                  </div>
+                  <a href="#">
+                    <div class="panel-footer announcement-bottom" onclick="location.href = './personal_profile';" >
+                      <div class="row">
+                        <div class="col-xs-6">
+                          Expand
+                        </div>
+                        <div class="col-xs-6 text-right">
+                          <i class="fa fa-arrow-circle-right"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+                    <div class="col-lg-9">
+                            <div class="well col-lg-4">Leave days left this year {{thisyear}}</div>
+                        </div>
+
+              <div class="col-lg-3">
+                <div class="panel panel-warning">
+                  <div class="panel-heading">
+                    <div class="row">
+                      <div class="col-xs-6">
+                        <i class="fa fa-barcode fa-5x"></i>
+                      </div>
+                      <div class="col-xs-6 text-right">
+                        <p class="announcement-text"> New Application </p>
+                      </div>
+                    </div>
+                  </div>
+                  <a href="#">
+                    <div class="panel-footer announcement-bottom" onclick="location.href = './new_application';" >
+                      <div class="row">
+                            <div class="col-lg-9"></div>
+
+                        <div class="col-xs-6">
+                          Expand
+                        </div>
+                        <div class="col-xs-6 text-right">
+                          <i class="fa fa-arrow-circle-right"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            <div class="row">
+                    <div class="col-lg-9"></div>
+
+              <div class="col-lg-3">
+                <div class="panel panel-danger">
+                  <div class="panel-heading">
+                    <div class="row">
+                      <div class="col-xs-6">
+                        <i class="fa fa-users fa-5x"></i>
+                      </div>
+                      
+                      <div class="col-xs-6 text-right">
+                        <p class="announcement-text"> Application Status </p>
+                      </div>
+                    </div>
+                  </div>
+                  <a href="#">
+                    <div class="panel-footer announcement-bottom" onclick="location.href = './application_history';" >
+                      <div class="row">
+                        <div class="col-xs-6">
+                          Expand
+                        </div>
+                        <div class="col-xs-6 text-right">
+                          <i class="fa fa-arrow-circle-right"></i>
+                        </div>
+                      </div>
+                    </div>
+                  </a>
+                </div>
+              </div>
+            </div>
+            
+        </div>
+        <br><br><br><br>
+            <!-- <div class="container">
+                    <div class="well col-lg-4">Leave days left this year {{lthisyear}}</div>
+            </div>
+            <div class="container">
+                    <div class="well col-lg-4">Leave days left next year {{lnxtyear}}</div>
+             -->
+{%endblock%}

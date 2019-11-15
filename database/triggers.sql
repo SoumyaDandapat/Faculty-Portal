@@ -17,3 +17,23 @@ on leave_application
 for each row
 execute procedure remove_application();
 
+create or replace function default_eid()
+returns trigger as
+$$
+declare
+l int;
+i int;
+begin
+select into l leaves_left from const where id<>0;
+select into i id from const where id<>0;
+update employees set leaves_left=l,eid=i where eid=0 ;
+update const set id=id+1;
+return new;
+end $$ language plpgsql;
+
+create trigger insert_into_employees
+before insert
+on employees
+for each statement
+execute procedure default_eid();
+

@@ -1,10 +1,11 @@
 create table const(
     id int default 0,
-	leave_id int default 0
+	leave_id int default 0,
+    leaves_left int default 10
 );
 
 create table employees(
-    eid int primary key,
+    eid int primary key default 0,
     pwd varchar(30) not null,
     dept varchar(5),
     leaves_left int 

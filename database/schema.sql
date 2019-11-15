@@ -51,7 +51,6 @@ create table leave_database(
     reason varchar(200),
     leave_status varchar(1),
     comments varchar(200),
-    foreign key(leave_id) references leave_application(leave_id),
     foreign key(eid) references employees(eid)
 );
 

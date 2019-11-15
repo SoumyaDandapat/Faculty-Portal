@@ -30,7 +30,7 @@ create table dean(
 );
 
 create table leave_application(
-    leave_id int primary key,
+    leave_id int primary key default 0,
 	applicant_id int,
     reason varchar(200),
     leave_day int,

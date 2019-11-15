@@ -5,6 +5,11 @@ mongo_server="mongodb://localhost:27017/"
 
 class nosql:
 
+    def cursor_to_list(self,input):
+        lis=[]
+        for row in input:
+            lis.append(row)
+
     def __init__(self):
         client = pymongo.MongoClient(mongo_server) 
         database=client["dbms"]
@@ -16,6 +21,16 @@ class nosql:
         for row in ans:
             result.append(row)
         return result
+
+    def get_data_pretty(self,input):
+        ans=self.pprofile.find(input,{"_id":0})
+        ans=self.cursor_to_list(ans)        
+        return ans
+
+    def get_list_pretty(self):
+        ans=self.pprofile.find(,{"_id":0})
+        ans=self.cursor_to_list(ans)        
+        return ans
     
     def get_list(self):
         ans=self.pprofile.find()

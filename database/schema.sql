@@ -34,7 +34,7 @@ create table leave_application(
 	position int,
 	administrate_id int,
     comment varchar(200),
-    leave_status varchar(1) default "n",
+    leave_status varchar(1) default 'n',
 	foreign key(administrate_id) references employees(eid),
 	foreign key(applicant_id) references employees(eid)
 );

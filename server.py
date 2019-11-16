@@ -8,7 +8,7 @@ app = Flask(__name__)
 pobj= None
 nobj=None
 app.secret_key = 'qwertyuiopqazwsx'
-uneditable_content_personal=["","_id","eid","name","dept"]
+uneditable_content_personal=["","_id","eid","name","department"]
 private_content={"_id":0,"eid":0}
 
 
@@ -30,7 +30,7 @@ def filter_dictionary_personal_profile(old,new_html):
     uns={}
     upd={}
     for o in old:
-        if o not in new:
+        if o not in new and o not in uneditable_content_personal:
             uns[o]=1
             continue
         
@@ -94,7 +94,7 @@ def register_page():
         input=request.form.to_dict()
         eid=pobj.insert(data=input)
         if(eid!=-1):
-            nobj.insert_data({"eid":eid,"name":input["name"],"contact":input["contact"],"department":input["dept"]})
+            nobj.insert_data({"eid":eid,"name":input["name"],"email":input["email"],"department":input["dept"]})
             return render_template("registration_successfull.html",eid=str(eid))
         else:
             return redirect(url_for("register_page"))
@@ -123,7 +123,7 @@ def personal_profile():
         if request.method=="GET":
             query={"eid":eid}
             result=nobj.get_data(query,private_content)
-            return render_template("personal_profile.html",dict=result)
+            return render_template("personal_profile.html",dict=result,eid=eid)
         else:
             query={"eid":eid}
             result=nobj.get_data(query,private_content)

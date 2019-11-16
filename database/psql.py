@@ -20,16 +20,20 @@ class psql:
     def insert(self,data):
         self.conn.commit()
         new_eid=self.cur.execute("SELECT id from const where id<>0;")
-        new_eid =self.cur.fetchone() 
-        flag=self.cur.execute("SELECT * from employees where email='%s'",data[email])
-        flag=self.cur.fetchone()
+        new_eid =self.cur.fetchone() [0]
+        leaves=self.cur.execute("SELECT leaves_left from const where id<>0;")
+        leaves =self.cur.fetchone() [0]
+        print(new_eid)
+        flag=self.cur.execute("SELECT COUNT(*) from employees where email='{}'".format(data["email"]))
+        flag=self.cur.fetchone()[0]
         if flag==0: 
-            tuple=(data[email],data["dept"],data["pass"],data["gender"],data["dob"])
-            self.cur.execute("INSERT INTO employees(email,dept,pwd,gender,dob) values{};".format(tuple))
+            tuple=(data["name"],new_eid,data["email"],data["dept"],data["pass"],data["gender"],data["dob"],leaves)
+            print(tuple)
+            self.cur.execute("INSERT INTO employees(name,eid,email,dept,pwd,gender,dob,leaves_left) values{};".format(tuple))
             self.conn.commit()
             return new_eid
         else:
-            return new_eid-1
+            return -1
 
     def initializer(self):
 
@@ -60,12 +64,12 @@ class psql:
             print(3)
 
     def clear_data(self):
-        self.cur.execute("delete from eidmax ")
+        self.cur.execute("delete from const ")
         self.conn.commit()
         self.cur.execute("delete from employees")
         self.conn.commit()
         try:    
-            self.cur.execute("INSERT INTO eidmax values(0)")
+            self.cur.execute("INSERT INTO const values(201700,0,10)")
             self.conn.commit()
         except:
             print(3)
@@ -80,9 +84,9 @@ class psql:
         return False
 
     def get_leaves(self,data):
-        ans=self.cur.execute("select leaves_left from employees where eid=%s",data[eid])
-        ans=self.cur.fetchone()
-        if ans < 0
+        ans=self.cur.execute("select leaves_left from employees where eid={}".format(data))
+        ans=self.cur.fetchone()[0]
+        if ans < 0:
             return 0
-        else
+        else:
             return ans

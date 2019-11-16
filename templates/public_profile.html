@@ -15,13 +15,18 @@
 
 {%block content%}
 <br><br>
+
+
 {% for i in dict%}  
-<div class="container-fluid">
-  <h>{{i}}</h>
-  <p>{{dict[i]}}</p>
-</div>
-{% endfor%}
-</body>
-</html> 
+<div class="card" style="width: inherit;">
+    <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
+    <div class="card-body">
+      <h class="card-title" style="font-size:xx-large;font-weight:900">{{i}}:</h><br>
+      <br>
+      <p class="card-text">{{dict[i]}}</p>
+    </div>
+  </div>
+  <br><br>
+{% endfor %}
 
 {% endblock %}

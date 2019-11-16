@@ -31,10 +31,10 @@ class nosql:
         ans=self.pprofile.find_one(input,what)
         return ans
 
-    def get_data(self,input):
-        ans=self.pprofile.find_one(input,{"_id":0,"eid":0})
-        # ans=self.cursor_to_list(ans)        
-        return ans
+    # def get_data(self,input):
+    #     ans=self.pprofile.find_one(input,{"_id":0,"eid":0})
+    #     # ans=self.cursor_to_list(ans)        
+    #     return ans
 
 #get public list
     def check_mail(self,input):

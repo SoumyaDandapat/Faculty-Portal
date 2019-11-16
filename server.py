@@ -8,7 +8,7 @@ app = Flask(__name__)
 pobj= None
 nobj=None
 app.secret_key = 'qwertyuiopqazwsx'
-uneditable_content=["","_id","eid","name","dept"]
+uneditable_content_personal=["","_id","eid","name","dept"]
 
 
 def initializer():
@@ -21,11 +21,10 @@ def filter_dictionary_personal_profile(old,new_html):
     new={}
     siz=(int((len(new_html)/2))-1)
     for x in range(siz):
-                h=new_html["head"+str(x)]
-                p=new_html["par"+str(x)]
-                if(h=="" or p=="" or h=="_id" or h=="eid"):
-                    continue
-                new[h]=p
+        h=new_html["head"+str(x)]
+        p=new_html["par"+str(x)]
+        if h not in uneditable_content_personal:
+            new[h]=p
     ###
     uns={}
     upd={}
@@ -40,7 +39,7 @@ def filter_dictionary_personal_profile(old,new_html):
     
     newh=new_html["newh"]
     newp=new_html["newp"]
-    if(newh!="" and newp!="" and newh!="_id" and newh!="eid"):
+    if newh not in uneditable_content_personal:
         upd[newh]=newp
 
     return (uns,upd) 
@@ -93,9 +92,9 @@ def register_page():
         return render_template('register.html')
     else:
         input=request.form.to_dict()
-        if(nobj.check_mail(input["contact"])):
-            eid=pobj.insert(data=input)
-            nobj.insert_data({"eid":eid,"name":input["name"],"contact":input["contact"]})
+        eid=pobj.insert(data=input)
+        if(eid!=-1):
+            nobj.insert_data({"eid":eid,"name":input["name"],"contact":input["contact"],"department":input["dept"]})
             return render_template("registration_successfull.html",eid=str(eid))
         else:
             return redirect(url_for("register_page"))

@@ -79,3 +79,10 @@ class psql:
             return True
         return False
 
+    def get_leaves(self,data):
+        ans=self.cur.execute("select leaves_left from employees where eid=%s",data[eid])
+        ans=self.cur.fetchone()
+        if ans < 0
+            return 0
+        else
+            return ans

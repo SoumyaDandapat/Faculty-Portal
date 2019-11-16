@@ -110,7 +110,7 @@ def delete():
 def dashboard():
     if 'username' in session:
         eid=session['username']
-        thisyear_leaves=psql.get_leaves(eid)
+        thisyear_leaves=pobj.get_leaves(eid)
         return render_template("dashboard.html",thisyear=thisyear_leaves)
     else:
         return redirect(url_for("login"))

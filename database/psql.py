@@ -21,7 +21,7 @@ class psql:
         self.conn.commit()
         new_eid=self.cur.execute("SELECT id from const where id<>0;")
         new_eid =self.cur.fetchone() 
-        flag=self.cur.execute("SELECT * from employees where email='%s'",data[email])
+        flag=self.cur.execute("SELECT count(*) from employees where email='%s'",data[email])
         flag=self.cur.fetchone()
         if flag==0: 
             tuple=(data[email],data["dept"],data["pass"],data["gender"],data["dob"])
@@ -82,7 +82,7 @@ class psql:
     def get_leaves(self,data):
         ans=self.cur.execute("select leaves_left from employees where eid=%s",data[eid])
         ans=self.cur.fetchone()
-        if ans < 0
+        if ans < 0:
             return 0
-        else
+        else:
             return ans

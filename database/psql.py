@@ -73,7 +73,7 @@ class psql:
 
     def verify_user(self,data):
         
-        ans=self.cur.execute("SELECT * FROM check_passwd(%s,%s)",(data["eid"],data["pass"]))
+        ans=self.cur.execute("SELECT count(*) FROM check_passwd(%s,%s)",(data["eid"],data["pass"]))
         ans=self.cur.fetchone()
         if ans[0] == 'y':
             return True

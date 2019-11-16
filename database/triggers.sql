@@ -57,7 +57,8 @@ return t;
 end $$ language plpgsql;
 
 create or replace function get_id(id int,pos int)
-returns int as$$
+returns int as
+$$
 declare
 i int;
 t varchar(15);

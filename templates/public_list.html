@@ -13,8 +13,8 @@
  </head>
  <body> -->
  
- 
- {% for i in lis)%} 
+ <br>
+ {% for i in lis %} 
  
  <div class="row">
     <div class="col-lg-2"></div>
@@ -30,8 +30,19 @@
         <ul class="list-group">
             <li class="list-group-item">
                     <!-- <div class="card"> -->
-                        <div class="card-body">{{i["name"]}}</div>
-                        <span class="badge"  type="button" onclick="location.href='/{{i["eid"]}}'">VIEW PROFILE
+                        <div class="card-body">
+                            <div class="col-md-3">
+                                {{i["name"]}}
+                            </div>
+                            <div class="col-md-3">
+                                {{i["contact"]}}
+                            </div>
+                            <div class="col-md-3">
+                                    {{i["dept"]}}
+                                </div>
+                            
+                        </div>
+                        <span class="badge"  type="button" onclick="location.href='./public/{{i["eid"]}}'">VIEW PROFILE
                         </span>
                     <!-- </div> -->
             </li>

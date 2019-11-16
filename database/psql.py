@@ -12,6 +12,7 @@ class psql:
             self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "postgres", host = "127.0.0.1", port = "5432")
             self.conn.autocommit = True
             self.cur=self.conn.cursor()
+            print("Connected to psql server")
             # create a cursor
             
         except (Exception, psycopg2.DatabaseError) as error:
@@ -19,13 +20,13 @@ class psql:
 
     def insert(self,data):
         self.conn.commit()
-        self.cur.execute("select eidmax from constants;")
+        self.cur.execute("select id from const;")
         new_eid = self.cur.fetchone()[0]
-        self.cur.execute("select leaves from constants;")
+        self.cur.execute("select leaves_left from const;")
         leaves = self.cur.fetchone()[0]   
         tuple=(new_eid,data["dept"],data["pass"],data["gender"],data["dob"],leaves)
-        self.cur.execute("INSERT INTO employees values{}".format(tuple))
-        self.cur.execute("UPDATE eidmax set num=num+1 ")
+        self.cur.execute("INSERT INTO employees(eid,dept,pwd,gender,dob,leaves_left) values{}".format(tuple))
+        self.cur.execute("UPDATE const set id=id+1 ")
         self.conn.commit()
         return new_eid
 
@@ -71,7 +72,7 @@ class psql:
 
     def verify_user(self,data):
         
-        ans=self.cur.execute("SELECT COUNT(*) FROM employees where eid=%s and pass=%s",(data["eid"],data["pass"]))
+        ans=self.cur.execute("SELECT COUNT(*) FROM employees where eid=%s and pwd=%s",(data["eid"],data["pass"]))
         ans=self.cur.fetchone()
         if ans[0] == 1:
             return True

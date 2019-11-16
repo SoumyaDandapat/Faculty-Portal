@@ -3,28 +3,22 @@ from flask.templating import render_template
 from database.nosql import nosql
 from database.psql import psql
 
+
 app = Flask(__name__)
 pobj= None
 nobj=None
 app.secret_key = 'qwertyuiopqazwsx'
+uneditable_content=["","_id","eid","name","dept"]
 
-# mydb = mysql.connector.connect(host="localhost",user="postgres",passwd="123",port=5432)
 
 def initializer():
     global pobj,nobj
     pobj=psql()
     nobj=nosql()
-    pobj.initializer()
-
-# @app.route("/",methods=["GET"])
-# def root():
-#     return render_template("root.html")
-#     # return redirect(url_for("login"))
 
 def filter_dictionary_personal_profile(old,new_html):
 
     new={}
-    ## extracting dictionary from html
     siz=(int((len(new_html)/2))-1)
     for x in range(siz):
                 h=new_html["head"+str(x)]
@@ -44,8 +38,8 @@ def filter_dictionary_personal_profile(old,new_html):
         if n not in old or old[n]!=new[n]:
             upd[n]=new[n]
     
-    newh=new["newh"]
-    newp=new["newp"]
+    newh=new_html["newh"]
+    newp=new_html["newp"]
     if(newh!="" and newp!="" and newh!="_id" and newh!="eid"):
         upd[newh]=newp
 
@@ -57,15 +51,16 @@ def public():
     return render_template("root.html")
 
 @app.route("/public",methods=["GET"])
-def root(num):
+def root():
+
     res=nobj.get_list_pretty()
     return render_template("public_list.html",lis=res)
 
 @app.route("/public/<num>")
 def public_personal_profile(num):
     query={"eid":int(num,10)}
-    result=nobj.get_data_pretty(query)
-    return render_template("public_profile.html",lene=len(dict),dict=result)
+    result=nobj.get_data(query)
+    return render_template("public_profile.html",dict=result)
 
 
 @app.route("/login",methods=["GET","POST"])
@@ -98,9 +93,12 @@ def register_page():
         return render_template('register.html')
     else:
         input=request.form.to_dict()
-        eid=pobj.insert(data=input)
-        nobj.insert_data({"eid":eid,"name":input["name"]})
-        return render_template("registration_successfull.html",eid=str(eid))
+        if(nobj.check_mail(input["contact"])):
+            eid=pobj.insert(data=input)
+            nobj.insert_data({"eid":eid,"name":input["name"],"contact":input["contact"]})
+            return render_template("registration_successfull.html",eid=str(eid))
+        else:
+            return redirect(url_for("register_page"))
 
 @app.route("/delete",methods=["GET","POST"])
 def delete():
@@ -123,8 +121,8 @@ def personal_profile():
 
         if request.method=="GET":
             query={"eid":eid}
-            result=nobj.get_data_pretty(query)
-            return render_template("personal_profile.html",dict=result,len=len(result))
+            result=nobj.get_data(query)
+            return render_template("personal_profile.html",dict=result)
         else:
             query={"eid":eid}
             result=nobj.get_data(query)
@@ -138,7 +136,7 @@ def personal_profile():
                 nobj.update_data(query,upd)
             
 
-            if(request.form["sub"]=="sub"):
+            if(request.form["sub"]=="SUBMIT"):
                 return redirect(url_for("dashboard"))
             else:
                 return redirect(url_for("personal_profile"))

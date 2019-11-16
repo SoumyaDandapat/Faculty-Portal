@@ -9,6 +9,7 @@ pobj= None
 nobj=None
 app.secret_key = 'qwertyuiopqazwsx'
 uneditable_content_personal=["","_id","eid","name","dept"]
+private_content={"_id":0,"eid":0}
 
 
 def initializer():
@@ -58,7 +59,7 @@ def root():
 @app.route("/public/<num>")
 def public_personal_profile(num):
     query={"eid":int(num,10)}
-    result=nobj.get_data(query)
+    result=nobj.get_data(query,private_content)
     return render_template("public_profile.html",dict=result)
 
 
@@ -72,8 +73,7 @@ def login():
         if(ans["eid"].isnumeric()!=True):
             return redirect(url_for("login"))
         eid=int(ans["eid"],10)
-        ans["eid"]=eid
-        if(pobj.verify_user(ans)):
+        if(pobj.verify_user({"eid":eid,"pass":ans["pass"]})):
             session['username']=eid
             return redirect(url_for("dashboard"))
         else:
@@ -109,7 +109,9 @@ def delete():
 @app.route("/dashboard",methods=["GET"])
 def dashboard():
     if 'username' in session:
-        return render_template("dashboard.html")
+        eid=session['username']
+        thisyear_leaves=psql.get_leaves(eid)
+        return render_template("dashboard.html",thisyear=thisyear_leaves)
     else:
         return redirect(url_for("login"))
 
@@ -120,11 +122,11 @@ def personal_profile():
 
         if request.method=="GET":
             query={"eid":eid}
-            result=nobj.get_data(query)
+            result=nobj.get_data(query,private_content)
             return render_template("personal_profile.html",dict=result)
         else:
             query={"eid":eid}
-            result=nobj.get_data(query)
+            result=nobj.get_data(query,private_content)
             new=request.form.to_dict()
             (uns,upd)=filter_dictionary_personal_profile(result,new)
             

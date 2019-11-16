@@ -23,7 +23,7 @@ class psql:
         new_eid =self.cur.fetchone() 
         flag=self.cur.execute("SELECT * from employees where email='%s'",data[email])
         flag=self.cur.fetchone()
-        if flag =0: 
+        if flag==0: 
             tuple=(data[email],data["dept"],data["pass"],data["gender"],data["dob"])
             self.cur.execute("INSERT INTO employees(email,dept,pwd,gender,dob) values{};".format(tuple))
             self.conn.commit()
@@ -72,12 +72,10 @@ class psql:
 
 
     def verify_user(self,data):
-        # print(data)
-        temp=int(data["eid"],10)
-        ans=self.cur.execute("SELECT * FROM check_passwd(%s,%s)",(temp,data["pass"]))
+        
+        ans=self.cur.execute("SELECT * FROM check_passwd(%s,%s)",(data["eid"],data["pass"]))
         ans=self.cur.fetchone()
-        # print(ans)
-        if ans[0] == y:
+        if ans[0] == 'y':
             return True
         return False
 

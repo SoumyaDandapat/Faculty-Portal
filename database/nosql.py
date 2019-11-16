@@ -27,6 +27,10 @@ class nosql:
     #         result.append(temp)
     #     return result
 
+    def get_data(self,input,what):
+        ans=self.pprofile.find_one(input,what)
+        return ans
+
     def get_data(self,input):
         ans=self.pprofile.find_one(input,{"_id":0,"eid":0})
         # ans=self.cursor_to_list(ans)        
@@ -41,8 +45,8 @@ class nosql:
         else:
             return False
 
-    def get_list_pretty(self):
-        ans=self.pprofile.find({},{"eid":1,"name":1,"contact":1})
+    def get_list_pretty(self):## used by public list
+        ans=self.pprofile.find({},{"eid":1,"name":1,"department":1})
         ans=self.cursor_to_list(ans)        
         return ans
     

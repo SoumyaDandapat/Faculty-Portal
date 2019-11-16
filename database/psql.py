@@ -24,8 +24,8 @@ class psql:
         flag=self.cur.execute("SELECT * from employees where email='%s'",data[email])
         flag=self.cur.fetchone()
         if flag =0: 
-            tuple=(data["dept"],data["pass"],data["gender"],data["dob"])
-            self.cur.execute("INSERT INTO employees(dept,pwd,gender,dob) values{};".format(tuple))
+            tuple=(data[email],data["dept"],data["pass"],data["gender"],data["dob"])
+            self.cur.execute("INSERT INTO employees(email,dept,pwd,gender,dob) values{};".format(tuple))
             self.conn.commit()
             return new_eid
         else:

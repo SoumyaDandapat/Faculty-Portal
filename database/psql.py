@@ -19,8 +19,6 @@ class psql:
 
     def insert(self,data):
         self.conn.commit()
-        self.cur.execute("select * from employees;")
-        row = self.cur.fetchone()
         new_eid=self.cur.execute("SELECT id from const where id<>0;")
         new_eid =self.cur.fetchone()  
         tuple=(data["dept"],data["pass"],data["gender"],data["dob"])

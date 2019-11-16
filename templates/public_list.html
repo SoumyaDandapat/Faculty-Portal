@@ -14,7 +14,7 @@
  <body> -->
  
  
- {% for i in range(lene)%} 
+ {% for i in lis)%} 
  
  <div class="row">
     <div class="col-lg-2"></div>
@@ -30,9 +30,9 @@
         <ul class="list-group">
             <li class="list-group-item">
                     <!-- <div class="card"> -->
-                            <div class="card-body">test</div>
-                            <span class="badge"  type="button" onclick="location.href='../public{{i}}'">VIEW PROFILE
-                            </span>
+                        <div class="card-body">{{i["name"]}}</div>
+                        <span class="badge"  type="button" onclick="location.href='/{{i["eid"]}}'">VIEW PROFILE
+                        </span>
                     <!-- </div> -->
             </li>
         </ul> 

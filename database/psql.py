@@ -20,6 +20,7 @@ class psql:
 
     def insert(self,data):
         self.conn.commit()
+<<<<<<< HEAD
         self.cur.execute("select id from const;")
         new_eid = self.cur.fetchone()[0]
         self.cur.execute("select leaves_left from const;")
@@ -27,6 +28,12 @@ class psql:
         tuple=(new_eid,data["dept"],data["pass"],data["gender"],data["dob"],leaves)
         self.cur.execute("INSERT INTO employees(eid,dept,pwd,gender,dob,leaves_left) values{}".format(tuple))
         self.cur.execute("UPDATE const set id=id+1 ")
+=======
+        new_eid=self.cur.execute("SELECT id from const where id<>0;")
+        new_eid =self.cur.fetchone()  
+        tuple=(data["dept"],data["pass"],data["gender"],data["dob"])
+        self.cur.execute("INSERT INTO employees(dept,pwd,gender,dob) values{};".format(tuple))
+>>>>>>> dea8a2d3f0562a7a2cc7f3027779a81ff05ac31e
         self.conn.commit()
         return new_eid
 
@@ -71,10 +78,17 @@ class psql:
 
 
     def verify_user(self,data):
+<<<<<<< HEAD
         
         ans=self.cur.execute("SELECT COUNT(*) FROM employees where eid=%s and pwd=%s",(data["eid"],data["pass"]))
+=======
+        # print(data)
+        temp=int(data["eid"],10)
+        ans=self.cur.execute("SELECT * FROM check_passwd(%s,%s)",(temp,data["pass"]))
+>>>>>>> dea8a2d3f0562a7a2cc7f3027779a81ff05ac31e
         ans=self.cur.fetchone()
-        if ans[0] == 1:
+        # print(ans)
+        if ans[0] == y:
             return True
         return False
 

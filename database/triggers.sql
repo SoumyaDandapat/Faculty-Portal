@@ -37,3 +37,22 @@ on employees
 for each statement
 execute procedure default_eid();
 
+create or replace function check_passwd(id int,passwd varchar(30))
+returns varchar(1) as 
+$$
+declare
+flag int; 
+p varchar(30); 
+t varchar(1);
+begin 
+select into flag count(*) from employees where eid=id;
+t='n';
+if flag=1 then
+select into p pwd from employees where eid=id;
+if p=passwd then
+t='y';
+end if;
+end if;
+return t;
+end $$ language plpgsql;
+

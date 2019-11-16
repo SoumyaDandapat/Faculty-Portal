@@ -8,7 +8,8 @@ app = Flask(__name__)
 pobj= None
 nobj=None
 app.secret_key = 'qwertyuiopqazwsx'
-uneditable_content=["","_id","eid","name","dept"]
+uneditable_content_personal=["","_id","eid","name","dept"]
+private_content={"_id":0,"eid":0}
 
 
 def initializer():
@@ -21,11 +22,10 @@ def filter_dictionary_personal_profile(old,new_html):
     new={}
     siz=(int((len(new_html)/2))-1)
     for x in range(siz):
-                h=new_html["head"+str(x)]
-                p=new_html["par"+str(x)]
-                if(h=="" or p=="" or h=="_id" or h=="eid"):
-                    continue
-                new[h]=p
+        h=new_html["head"+str(x)]
+        p=new_html["par"+str(x)]
+        if h not in uneditable_content_personal:
+            new[h]=p
     ###
     uns={}
     upd={}
@@ -40,7 +40,7 @@ def filter_dictionary_personal_profile(old,new_html):
     
     newh=new_html["newh"]
     newp=new_html["newp"]
-    if(newh!="" and newp!="" and newh!="_id" and newh!="eid"):
+    if newh not in uneditable_content_personal:
         upd[newh]=newp
 
     return (uns,upd) 
@@ -59,7 +59,7 @@ def root():
 @app.route("/public/<num>")
 def public_personal_profile(num):
     query={"eid":int(num,10)}
-    result=nobj.get_data(query)
+    result=nobj.get_data(query,private_content)
     return render_template("public_profile.html",dict=result)
 
 
@@ -73,8 +73,7 @@ def login():
         if(ans["eid"].isnumeric()!=True):
             return redirect(url_for("login"))
         eid=int(ans["eid"],10)
-        ans["eid"]=eid
-        if(pobj.verify_user(ans)):
+        if(pobj.verify_user({"eid":eid,"pass":ans["pass"]})):
             session['username']=eid
             return redirect(url_for("dashboard"))
         else:
@@ -93,9 +92,9 @@ def register_page():
         return render_template('register.html')
     else:
         input=request.form.to_dict()
-        if(nobj.check_mail(input["contact"])):
-            eid=pobj.insert(data=input)
-            nobj.insert_data({"eid":eid,"name":input["name"],"contact":input["contact"]})
+        eid=pobj.insert(data=input)
+        if(eid!=-1):
+            nobj.insert_data({"eid":eid,"name":input["name"],"contact":input["contact"],"department":input["dept"]})
             return render_template("registration_successfull.html",eid=str(eid))
         else:
             return redirect(url_for("register_page"))
@@ -110,7 +109,9 @@ def delete():
 @app.route("/dashboard",methods=["GET"])
 def dashboard():
     if 'username' in session:
-        return render_template("dashboard.html")
+        eid=session['username']
+        thisyear_leaves=psql.get_leaves(eid)
+        return render_template("dashboard.html",thisyear=thisyear_leaves)
     else:
         return redirect(url_for("login"))
 
@@ -121,11 +122,11 @@ def personal_profile():
 
         if request.method=="GET":
             query={"eid":eid}
-            result=nobj.get_data(query)
+            result=nobj.get_data(query,private_content)
             return render_template("personal_profile.html",dict=result)
         else:
             query={"eid":eid}
-            result=nobj.get_data(query)
+            result=nobj.get_data(query,private_content)
             new=request.form.to_dict()
             (uns,upd)=filter_dictionary_personal_profile(result,new)
             

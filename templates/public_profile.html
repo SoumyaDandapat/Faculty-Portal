@@ -1,5 +1,5 @@
 
- <!DOCTYPE html>
+ <!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <title>Bootstrap Theme Simply Me</title>
@@ -9,14 +9,19 @@
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
 </head>
-<body>
+<body> -->
 
+{% extends "base.html" %}
 
+{%block content%}
+<br><br>
 {% for i in dict%}  
 <div class="container-fluid">
-  <h3>{{i}}</h3>
-  <h3>{{dict[i]}}</h3>
+  <h>{{i}}</h>
+  <p>{{dict[i]}}</p>
 </div>
 {% endfor%}
 </body>
 </html> 
+
+{% endblock %}

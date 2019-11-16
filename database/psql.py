@@ -79,6 +79,7 @@ class psql:
         
         ans=self.cur.execute("SELECT * FROM check_passwd(%s,%s)",(data["eid"],data["pass"]))
         ans=self.cur.fetchone()
+        print(ans)
         if ans[0] == 'y':
             return True
         return False

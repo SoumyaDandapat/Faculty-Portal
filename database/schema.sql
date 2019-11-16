@@ -7,6 +7,7 @@ create table const(
 create table employees(
     eid int primary key default 0,
     pwd varchar(30) not null,
+    email varchar(50) unique,
     dept varchar(5),
     dob date,
     gender varchar(1),

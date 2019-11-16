@@ -20,11 +20,16 @@ class psql:
     def insert(self,data):
         self.conn.commit()
         new_eid=self.cur.execute("SELECT id from const where id<>0;")
-        new_eid =self.cur.fetchone()  
-        tuple=(data["dept"],data["pass"],data["gender"],data["dob"])
-        self.cur.execute("INSERT INTO employees(dept,pwd,gender,dob) values{};".format(tuple))
-        self.conn.commit()
-        return new_eid
+        new_eid =self.cur.fetchone() 
+        flag=self.cur.execute("SELECT * from employees where email='%s'",data[email])
+        flag=self.cur.fetchone()
+        if flag =0: 
+            tuple=(data["dept"],data["pass"],data["gender"],data["dob"])
+            self.cur.execute("INSERT INTO employees(dept,pwd,gender,dob) values{};".format(tuple))
+            self.conn.commit()
+            return new_eid
+        else:
+            return new_eid-1
 
     def initializer(self):
 

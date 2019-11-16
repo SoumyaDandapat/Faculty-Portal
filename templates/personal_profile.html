@@ -2,8 +2,6 @@
 
 {% block content %}
 
-<br><br>
-
 <div class="card" style="width:inherit;">
     <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
     <div class="card-body">
@@ -43,9 +41,15 @@
       <textarea input type="text" style="font-size:15px;color:grey; block-size: 90px;width: 800px;background-color:lightcyan;" name="newp" placeholder="leave it blank if not required" ></textarea>
       <br>    
     </p>
-<input class="btn btn-primary" type="submit" name="sub" value="SUBMIT" ">
-<input  class="btn btn-primary" type="submit" name="sub" value="ADD NEW PARAGRAPH" >
-<a href="/public/{{eid}}" class="btn btn-primary" target="_blank">View as public page</a> 
+
+  
+<div class="row" >
+<input class="btn btn-primary" type="submit" name="sub" value="SUBMIT" style="background-color: blue;">
+<input  class="btn btn-primary" type="submit" name="sub" value="ADD NEW PARAGRAPH" style="background-color: blue;" >
+<!-- <a href="/public/{{eid}}" class="btn btn-primary" target="_blank">View as public page</a>  -->
+<input class="btn btn-primary"  onclick="location.href = '/public/{{eid}}'" type="button" value="View as Public" style="background-color: blue;">
+
+</div>
 </form>
 
 <!-- <p name="base">

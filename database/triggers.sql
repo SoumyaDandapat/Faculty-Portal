@@ -76,10 +76,10 @@ return i;
 end $$ language plpgsql;
 
 create or replace function create_leave(id int,reasons varchar(200),days_required int)
-returns text as
+returns int as
 $$
 declare
-t text;
+t int;
 c int;
 l int;
 flag1 int;
@@ -88,7 +88,7 @@ i int;
 pos int;
 begin
 select into c count(*) from leave_application where applicant_id=id;
-t='Invalid';
+t=0;
 if c=0 then
 select into l leave_id from const where leave_id<>0;
 select into flag1 count(*) from hod where hod_id=id;
@@ -96,14 +96,15 @@ select into flag2 count(*) from dean where dean_id=id;
 if flag1<>0 or flag2<>0 then
 select into i director_id from director where director_id<>0;
 select into pos rank from ranks where type_of_faculty='director';
-insert into leave_application(leave_id,applicant_id,reason,position,administrate_id) values(l,id,reasons,pos,i);
-t='Inserted';
+insert into leave_application(leave_id,applicant_id,reason,position,administrate_id,leave_day) values(l,id,reasons,pos,i,days_required);
+t=1;
 end if;
 if flag1=0 and flag2=0 then
 i=get_id(id,1);
-insert into leave_application(leave_id,applicant_id,reason,position,administrate_id) values(l,id,reasons,1,i);
-t='inserted';
+insert into leave_application(leave_id,applicant_id,reason,position,administrate_id,leave_day) values(l,id,reasons,1,i,days_required);
+t=1;
 end if;
+update const set leave_id=leave_id+1;
 end if;
 return t;
 end $$ language plpgsql;

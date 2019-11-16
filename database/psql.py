@@ -90,3 +90,23 @@ class psql:
             return 0
         else:
             return ans
+    
+    def insert_leave(self,data):
+        self.conn.commit()
+        new_lid=self.cur.execute("SELECT leave_id from const where id<>0;")
+        new_lid =self.cur.fetchone() [0]
+        leaves=self.cur.execute("SELECT leaves_left from const where id<>0;")
+        leaves =self.cur.fetchone() [0]
+        leaves_left=self.cur.execute("SELECT leaves_left from employees where eid=%s",data["eid"])
+        leaves_left=self.cur.fetchone()[0]
+
+        if leaves_left-data["days"] < -leaves:
+            return -1
+        else :
+            result=self.cur.execute("SELECT * from create_leave(%s,%s,%s)",data["eid"],data["reason"],data["days"] )
+            result=self.cur.fetchone()[0]
+            if result == 0:
+                return -1
+            else:
+                return new_lid
+

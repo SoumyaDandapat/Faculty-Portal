@@ -8,7 +8,8 @@ create table employees(
     eid int primary key default 0,
     name varchar(20),
     pwd varchar(30) not null,
-    dept varchar(3),
+    email varchar(50) unique,
+    dept varchar(5),
     dob date,
     gender varchar(1),
     leaves_left int 

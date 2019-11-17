@@ -88,4 +88,13 @@ create table paper_trail(
     id int
 );
 
+    create table employee_database(
+    eid int,
+    name varchar(20),
+    email varchar(50) unique,
+    dept varchar(5),
+    dob date,
+    gender varchar(1), 
+);
+
 --insert into const values(2017000,1,10);

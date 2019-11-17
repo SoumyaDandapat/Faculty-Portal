@@ -124,5 +124,19 @@ class psql:
         comment=comment+'&'+employee_name+data["new_comment"]
         self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
 
-    
+    def act_on_leave(self,data):
+        self.conn.commit()
+        time=self.cur.execute("select current_date;")
+        time=self.cur.fetchone()[0]
+        flag1=self.cur.execute("select count(*) from hod where hod_id=%s",data["id"])
+        flag1=self.cur.fectchone()[0]
+        flag2=self.cur.execute("select count(*) from dean where dean_id=%s",data["id"])
+        flag2=self.cur.fectchone()[0]
+        flag3=self.cur.execute("select count(*) from director where director_id=%s",data["id"])
+        flag3=self.cur.fectchone()[0]
+        if flag1 == 1 or flag2==1:
+            self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id) values(%s,%s,%s,%s)",data["action"],time,data["position"],data["id"])
+        if flag3 ==1:
+            temp='dean'
+            self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id) values(%s,%s,%s,%s)",data["action"],time,t,data["id"])
 

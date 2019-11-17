@@ -17,7 +17,7 @@ create table employees(
 
 create table hod(
     hod_id int,
-    dept_name varchar(5),
+    dept_name varchar(20),
 	start_time date,
     end_time date,
     foreign key(hod_id) references employees(eid) 
@@ -25,7 +25,7 @@ create table hod(
 
 create table dean(
     dean_id int,
-    dean_type varchar(15),
+    dean_type varchar(40),
 	start_time date,
     end_time date,
     foreign key(dean_id) references employees(eid)

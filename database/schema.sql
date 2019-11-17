@@ -18,16 +18,16 @@ create table employees(
 create table hod(
     hod_id int,
     dept_name varchar(5),
-	start_time time,
-    end_time time,
+	start_time date,
+    end_time date,
     foreign key(hod_id) references employees(eid) 
 );
 
 create table dean(
     dean_id int,
     dean_type varchar(15),
-	start_time time,
-    end_time time,
+	start_time date,
+    end_time date,
     foreign key(dean_id) references employees(eid)
 );
 
@@ -36,6 +36,7 @@ create table leave_application(
 	applicant_id int,
     reason varchar(200),
     leave_day int,
+    start_leave date, 
 	position int,
 	administrate_id int,
     comment varchar(200),
@@ -53,17 +54,38 @@ create table leave_database(
     leave_id int,
     eid int,
     leave_day int,
+    start_leave date,
     reason varchar(200),
     leave_status varchar(1),
     comments varchar(200),
-    foreign key(eid) references employees(eid)
 );
 
 create table director(
     director_id int,
-	start_time time,
-    end_time time,
+	start_time date,
+    end_time date,
     foreign key(director_id) references employees(eid)
 );
 
-insert into const values(2017000,1,10);
+create table dean_database(
+    dean_id int,
+    dean_type varchar(15),
+	start_time date,
+    end_time date
+);
+
+create table hod_database(
+    hod_id int,
+    dept_name varchar(5),
+	start_time date,
+    end_time date
+);
+
+create table paper_trail(
+    action_taken varchar(1),
+    time_stamp date,
+    position varchar(20),
+    id int
+);
+
+--insert into const values(2017000,1,10);

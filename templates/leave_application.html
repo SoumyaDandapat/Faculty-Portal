@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block content %}
+<script>
+    
+    function TDate() {
+    var UserDate = document.getElementById("sdate").value;
+    var ToDate = new Date();
+
+    if (new Date(UserDate).getTime() <= ToDate.getTime()) {
+          alert("The Date must be Bigger or Equal to today date");
+          return false;
+     }
+     UserDate2 = document.getElementById("edate").value;
+     if (new Date(UserDate2).getTime() <= new Date(UserDate).getTime()) {
+          alert("The Date must be Bigger or Equal to start date");
+          return false;
+     }
+    return true;
+}
+
+
+</script>
+<div class="container">
+    <form class="form-horizontal" role="form" action="/dashboard" method="post" onsubmit="return TDate()">
+        <h2>NEW LEAVE APPLICATION</h2>
+        
+        <div class="form-group">
+            <label for="birthDate" class="col-sm-3 control-label">START DATE</label>
+            <div class="col-sm-9">
+                <input type="date" id="sdate" class="form-control" name="sdate" required>
+            </div>
+        </div>
+        <br>
+        <div class="form-group">
+            <label for="birthDate" class="col-sm-3 control-label">END DATE</label>
+            <div class="col-sm-9">
+                <input type="date" id="edate" class="form-control" name="edate" required>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="firstName" class="col-sm-3 control-label">REASON</label>
+            <div class="col-sm-9">
+                <input type="text" id="reason" name="reason" placeholder="reason for you leave" class="form-control" autofocus required>
+            </div>
+        </div>
+       
+        <button type="submit"  class="btn btn-primary btn-block" id="submit">Submit</button>
+    </form> <!-- /form -->
+    
+</div> <!-- ./container -->
+
+{% endblock %}

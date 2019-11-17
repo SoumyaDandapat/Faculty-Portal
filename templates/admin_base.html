@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<script>
+    
+    function TDate() {
+    var UserDate = document.getElementById("sdate").value;
+    var ToDate = new Date();
+
+    if (new Date(UserDate).getTime() <= ToDate.getTime()) {
+          alert("The Date must be Bigger or Equal to today date");
+          return false;
+     }
+     UserDate2 = document.getElementById("edate").value;
+     if (new Date(UserDate2).getTime() <= new Date(UserDate).getTime()) {
+          alert("The Date must be Bigger or Equal to start date");
+          return false;
+     }
+    return true;
+}
+
+
+</script>
+
+<form action="./admin" method="POST" onsubmit="return TDate()">
+<br>
+
+{% for i in lis %} 
+
+{% if i["eid"]!=201700 %}
+<div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg-6">       
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="card-body">
+                    <div class="col-md-3">
+                        {{i["name"]}}
+                    </div>
+                    <div class="col-md-3">
+                        {{i["email"]}}
+                    </div>
+                    <div class="col-md-3">
+                        {{i["department"]}}
+                    </div>
+                    <div class="col-lg-1">
+                            <label class="radio-inline">
+                                    <input type="radio" id="maleRadio" name="gender" value={{i["eid"]}} >promote
+                            </label>
+                    </div>  
+                </div>
+                    <span class="badge"  type="button" onclick="location.href='./public/{{i["eid"]}}'">VIEW PROFILE
+                    </span>             
+            </li>
+        </ul> 
+    </div>           
+</div>
+    
+
+{% endif %}
+
+{% endfor%}
+<hr>
+<div class="row">
+<div class="col-lg-1"></div>
+<div class="col-lg-1"><p1>Promote as</p1></div>
+
+<div class="col-sm-6">
+                    
+                        <div class="col-sm-2">
+                            <label class="radio-inline">
+                                <input type="radio" id="femaleRadio" name="dept" value="CSE">HOD-CSE 
+                            </label>
+                        </div>
+                        <div class="col-sm-2">
+                            <label class="radio-inline">
+                                <input type="radio" id="maleRadio" name="dept" value="ME" >HOD-ME
+                            </label>
+                        </div>
+                        <div class="col-sm-2">
+                                <label class="radio-inline">
+                                    <input type="radio" id="femaleRadio" name="dept" value="FE">HOD-EE 
+                                </label>
+                        </div>
+                        <div class="col-sm-3">
+                                <label class="radio-inline">
+                                    <input type="radio" id="femaleRadio" name="dept" value="DFA">DEAN FACULTY AFFAIRS 
+                                </label>
+                            </div>
+                        <div class="col-sm-3">
+                                <label class="radio-inline">
+                                    <input type="radio" id="femaleRadio" name="dept" value="ADFA">ASSOCIATE DEAN FACULTY AFFAIRS 
+                                </label>
+                            </div>
+                        <div class="col-sm-2">
+                                <label class="radio-inline">
+                                    <input type="radio" id="femaleRadio" name="dept" value="DR"> DIRECTOR
+                                </label>
+                            </div>
+</div>
+</div>
+<hr>
+
+<!-- <br> -->
+
+<div class="row">
+<div class="col-lg-2"></div>
+<div class="col-lg-8">
+<div class="form-group">
+    <div class="col-md-3"> 
+    START DATE
+    <input type="date" id="sdate" class="form-control" name="sdate" required>
+    </div>
+    <div class="col-lg-5">
+    END DATE
+    <input type="date" id="edate" class="form-control" name="edate" required>
+    </div>
+   
+</div>
+</div>
+</div>
+<hr>
+<!-- <br> -->
+<div class="row">
+        <div class="col-lg-2"></div>
+<input class="btn btn-primary" type="submit" name="submit" value="promotion">
+</div>
+</form>
+
+<hr style="width: 100%; color: black; height: 1px; background-color:black;" />
+<div class="row">
+        <div class="col-lg-2"></div>
+<p1>
+    SET THE AMOUNT OF LEAVES
+</p1>
+</div>
+<div class="row">
+        <div class="col-lg-2"></div>
+<br>
+<p1>
+    Note that should be updated only once a year , ie the beginning of any academic year.
+</p1>
+</div>
+<form action="./admin" method="POST">
+
+<div class="row">
+<div class="col-lg-2"></div>
+<div class="col-md-3">
+
+    <h2>MAXIMUM LEAVES</h2>
+        <div class="form-group">
+            <label for="firstName" class="col-sm-3 control-label">LEAVES</label>
+            <div class="col-sm-9">
+                <input type="number" id="firstName" min="0" name="name" placeholder="ENTER ANY POSITIVE NUMBER" class="form-control" autofocus required >
+            </div>
+        </div>
+
+</div>
+</div>
+<br>
+<div class="row">
+        <div class="col-lg-2"></div>
+<input class="btn btn-primary" type="submit" name="submit" value="leaves">
+</div>
+</form>
+
+<hr style="width: 100%; color: black; height: 1px; background-color:black;" />
+
+
+
+{% endblock %}

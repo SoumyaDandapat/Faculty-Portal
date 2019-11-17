@@ -46,7 +46,7 @@ class nosql:
             return False
 
     def get_list_pretty(self):## used by public list
-        ans=self.pprofile.find({},{"eid":1,"name":1,"department":1})
+        ans=self.pprofile.find({},{"eid":1,"name":1,"department":1,"email":1})
         ans=self.cursor_to_list(ans)        
         return ans
     

@@ -137,6 +137,6 @@ class psql:
         if flag1 == 1 or flag2==1:
             self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id) values(%s,%s,%s,%s)",data["action"],time,data["position"],data["id"])
         if flag3 ==1:
-            temp='dean'
+            temp='director'
             self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id) values(%s,%s,%s,%s)",data["action"],time,t,data["id"])
 

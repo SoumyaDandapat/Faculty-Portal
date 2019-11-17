@@ -4,7 +4,8 @@ create table const(
     leaves_left int default 10
 );
 
-create table employees(
+create table employees
+(
     eid int primary key default 0,
     name varchar(20),
     pwd varchar(30) not null,
@@ -15,7 +16,8 @@ create table employees(
     leaves_left int 
 );
 
-create table hod(
+create table hod
+(   
     hod_id int,
     dept_name varchar(20),
 	start_time date,

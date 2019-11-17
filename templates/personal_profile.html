@@ -3,28 +3,15 @@
 {% block content %}
 
 <div class="card" style="width:inherit;">
-    <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
     <div class="card-body">
       <h5 class="card-title">Here you can edit your profile</h5>
       <p class="card-text">You can add new paragraph new heading but you cannot set new name or department/ the changes wouldnt show. You can quickly toggle to public view in button below</p>
     </div>
   </div>
-<!-- <button id="add" name="add" onclick="test()" style="background-color:aqua"> add new paragraph</button> -->
-
 <form id="frm" action="./personal_profile" method="post">
 
-  {% for i in dict %}
-  
-  <!-- <p name="par" id="par">
-    <br>
-    <input type="text" style="font-size:20px;color:black;font-style:bold;background-color:aliceblue;" name="head{{loop.index0}}" value="{{i}}">
-    <br><br>
-    <textarea input type="text" style="font-size:15px;color:rgb(49, 41, 41); block-size: 90px;width: 800px;background-color:aliceblue;" name="par{{loop.index0}}">{{dict[i]}}</textarea>
-    <br>    
-  </p>  -->
- 
+  {% for i in dict %} 
   <div class="card" style="width:inherit;">
-      <!-- <img class="card-img-top" src="..." alt="Card image cap"> -->
       <div class="card-body">
           <input type="text" style="font-size:20px;color:black;font-style:bold;background-color:aliceblue;" name="head{{loop.index0}}" value="{{i}}">
           <br>
@@ -46,19 +33,8 @@
 <div class="row" >
 <input class="btn btn-primary" type="submit" name="sub" value="SUBMIT" style="background-color: blue;">
 <input  class="btn btn-primary" type="submit" name="sub" value="ADD NEW PARAGRAPH" style="background-color: blue;" >
-<!-- <a href="/public/{{eid}}" class="btn btn-primary" target="_blank">View as public page</a>  -->
-<input class="btn btn-primary"  onclick="location.href = '/public/{{eid}}'" type="button" value="View as Public" style="background-color: blue;">
+<input class="btn btn-primary"  onclick="location.href = '/public/{{eid}}'"  type="button" value="View as Public" style="background-color: blue;">
 
 </div>
 </form>
-
-<!-- <p name="base">
-<h1 name="h" contenteditable="true">
-    hi
-</h1>
-<p1 name="p" contenteditable="true">
-    apargraph
-</p1>
-</p> -->
-
 {% endblock %}

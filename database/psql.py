@@ -91,3 +91,52 @@ class psql:
             return 0
         else:
             return ans
+    
+    def insert_leave(self,data):
+        self.conn.commit()
+        new_lid=self.cur.execute("SELECT leave_id from const where id<>0;")
+        new_lid =self.cur.fetchone() [0]
+        leaves=self.cur.execute("SELECT leaves_left from const where id<>0;")
+        leaves =self.cur.fetchone() [0]
+        leaves_left=self.cur.execute("SELECT leaves_left from employees where eid=%s",data["eid"])
+        leaves_left=self.cur.fetchone()[0]
+
+        if leaves_left-data["days"] < -leaves:
+            return -1
+        else :
+            result=self.cur.execute("SELECT * from create_leave(%s,%s,%s)",data["eid"],data["reason"],data["days"] )
+            result=self.cur.fetchone()[0]
+            if result == 0:
+                return -1
+            else:
+                return new_lid
+    
+    def set_leaves(self,data):
+        self.conn.commit()
+        self.cur.execute("UPDATE const set leaves_left= %s where id<>0",data["leaves"])
+
+    def add_comment(self,data):
+        self.conn.commit()
+        comment=self.cur.execute("SELECT comment from leave_application where leave_id=%s",data["leave_id"])
+        comment=self.cur.fetchone()[0]
+        employee_name=self.cur.execute("SELECT name from employees where eid=%s",data["id"])
+        employee_name=self.cur.fetchone()[0]
+        comment=comment+'&'+employee_name+data["new_comment"]
+        self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
+
+    def act_on_leave(self,data):
+        self.conn.commit()
+        time=self.cur.execute("select current_date;")
+        time=self.cur.fetchone()[0]
+        flag1=self.cur.execute("select count(*) from hod where hod_id=%s",data["id"])
+        flag1=self.cur.fectchone()[0]
+        flag2=self.cur.execute("select count(*) from dean where dean_id=%s",data["id"])
+        flag2=self.cur.fectchone()[0]
+        flag3=self.cur.execute("select count(*) from director where director_id=%s",data["id"])
+        flag3=self.cur.fectchone()[0]
+        if flag1 == 1 or flag2==1:
+            self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id) values(%s,%s,%s,%s)",data["action"],time,data["position"],data["id"])
+        if flag3 ==1:
+            temp='director'
+            self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id) values(%s,%s,%s,%s)",data["action"],time,t,data["id"])
+

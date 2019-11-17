@@ -75,6 +75,8 @@ def login():
         eid=int(ans["eid"],10)
         if(pobj.verify_user({"eid":eid,"pass":ans["pass"]})):
             session['username']=eid
+            if(eid==201700):
+                return redirect(url_for("admin"))
             return redirect(url_for("dashboard"))
         else:
             return redirect(url_for("login"))
@@ -143,11 +145,28 @@ def personal_profile():
                 return redirect(url_for("personal_profile"))
     else:
         return redirect(url_for("login"))
+
+@app.route("/admin",methods=["GET","POST"])
+def admin():
+    if 'username' not in session or session['username']!=201700:
+        return redirect(url_for("login"))
         
-@app.route("/new_application",methods=["GET","POST"])
+    if request.method=="GET":
+        return render_template("admin_base.html",lis=nobj.get_list_pretty())
+    else:
+        input=request.form.to_dict()
+        if(input["submit"]=="promotion"):
+            return "p"
+        elif(input["submit"]=="leaves"):
+            return "l"
+        elif(input["submit"]=="route"):
+            return "n"
+
+        
+@app.route("/dashboard/new_application",methods=["GET","POST"])
 def new_application():
     if request.method=="GET":
-        return render_template("new_application.html")
+        return render_template("leave_application.html")
     else:
         # save the updated application
         return redirect(url_for("dashboard"))

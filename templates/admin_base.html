@@ -23,6 +23,13 @@
 
 
 </script>
+{% with messages = get_flashed_messages() %}
+{% if messages %}
+   {% for message in messages %}
+      {{ message }}
+   {% endfor %}
+{% endif %}
+{% endwith %}
 
 <form action="./admin" method="POST" onsubmit="return TDate()">
 <br>
@@ -81,7 +88,7 @@
                         </div>
                         <div class="col-sm-2">
                                 <label class="radio-inline">
-                                    <input type="radio" id="femaleRadio" name="dept" value="FE">HOD-EE 
+                                    <input type="radio" id="femaleRadio" name="dept" value="EE">HOD-EE 
                                 </label>
                         </div>
                         <div class="col-sm-3">

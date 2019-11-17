@@ -156,7 +156,9 @@ def admin():
     else:
         input=request.form.to_dict()
         if(input["submit"]=="promotion"):
-            return "p"
+            res=pobj.promotion(input)
+            if(!res):
+                
         elif(input["submit"]=="leaves"):
             return "l"
         elif(input["submit"]=="route"):

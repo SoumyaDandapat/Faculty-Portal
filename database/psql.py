@@ -110,4 +110,19 @@ class psql:
                 return -1
             else:
                 return new_lid
+    
+    def set_leaves(self,data):
+        self.conn.commit()
+        self.cur.execute("UPDATE const set leaves_left= %s where id<>0",data["leaves"])
+
+    def add_comment(self,data):
+        self.conn.commit()
+        comment=self.cur.execute("SELECT comment from leave_application where leave_id=%s",data["leave_id"])
+        comment=self.cur.fetchone()[0]
+        employee_name=self.cur.execute("SELECT name from employees where eid=%s",data["id"])
+        employee_name=self.cur.fetchone()[0]
+        comment=comment+'&'+employee_name+data["new_comment"]
+        self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
+
+    
 

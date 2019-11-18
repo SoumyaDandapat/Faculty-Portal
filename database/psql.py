@@ -9,7 +9,7 @@ class psql:
         self.conn = None
         try:
             print('Connecting to the PostgreSQL database...')
-            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "Jon1114", host = "127.0.0.1", port = "5432")
+            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "postgres", host = "127.0.0.1", port = "5432")
             self.conn.autocommit = True
             self.cur=self.conn.cursor()
             # create a cursor

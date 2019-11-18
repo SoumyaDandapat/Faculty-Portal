@@ -114,25 +114,25 @@ class psql:
         # start_date=datetime.strptime(data["sdate"], ' %Y-%m-%d')
         # temp=end_date-start_date
         temp=b-a
-        if leaves_left- temp < -leaves or flag==1:
+        if leaves_left- temp.days < -leaves or flag==1:
             return -1
         else :
-            flag2=self.cur.execute("select count(*) from hod where hod_id={}",data["eid"])
+            flag2=self.cur.execute("select count(*) from hod where hod_id={}".format(data["eid"]))
             flag2=self.cur.fetchone()[0]
-            flag3=self.cur.execute("select count(*) from dean where dean_id={}",data["eid"])
+            flag3=self.cur.execute("select count(*) from dean where dean_id={}".format(data["eid"]))
             flag3=self.cur.fetchone()[0]
             if flag2==0 and flag3==0:
-                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_time"],data["start_time"],1)
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],1))
                 check1=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
                 check1=self.cur.fetchone()[0]
                 if check1 =='HOD':
-                    self.cur.execute("update hod set leave_array=leave_array||{} where dept={}".format(data["leave_id"]),data["dept"])
+                    self.cur.execute("update hod set leave_array=leave_array||{} where dept={}".format(data["leave_id"],data["dept"]))
                 if check1 =='DFA':
-                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='faculty affairs'",data["leave_id"])
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='faculty affairs'".format(data["leave_id"]))
                 if check1 =='ADFA':
-                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='associate faculty affairs'",data["leave_id"])
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='associate faculty affairs'".format(data["leave_id"]))
             else:
-                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_time"],data["start_time"],10)
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],10))
                 self.cur.execute("update director set leave_array=leave_array||{}".format(data["leave_id"]))
             self.cur.execute("update const set leave_id=leave_id+1;")
             return new_lid

@@ -19,7 +19,7 @@ create table employees
 create table hod
 (   
     hod_id int,
-    dept_name varchar(20),
+    dept varchar(20),
 	start_time date,
     end_time date,
     leave_array int array,
@@ -114,4 +114,4 @@ create table director_database(
     end_time date
 );
 
-insert into const values(2017000,1,10);
+insert into const values(201700,1,10);

@@ -70,12 +70,12 @@ select into d dept from employees where eid=id;
 select into i hod_id from hod where dept_name=d;
 end if;
 if t='dean' then
-select into i dean_id from dean where dean_type='faculty';
+select into i dean_id from dean where dean_type='faculty affairs';
 end if;
 return i;
 end $$ language plpgsql;
 
-create or replace function create_leave(id int,reasons varchar(200),days_required int,leave_start date)
+create or replace function create_leave(id int,reasons varchar(200),leave_end date,leave_start date)
 returns int as
 $$
 declare
@@ -96,12 +96,12 @@ select into flag2 count(*) from dean where dean_id=id;
 if flag1<>0 or flag2<>0 then
 select into i director_id from director where director_id<>0;
 select into pos rank from ranks where type_of_faculty='director';
-insert into leave_application(leave_id,applicant_id,reason,position,administrate_id,leave_day,start_leave) values(l,id,reasons,pos,i,days_required,leave_start);
+insert into leave_application(leave_id,applicant_id,reason,position,administrate_id,end_leave,start_leave) values(l,id,reasons,pos,i,leave_end,leave_start);
 t=1;
 end if;
 if flag1=0 and flag2=0 then
 i=get_id(id,1);
-insert into leave_application(leave_id,applicant_id,reason,position,administrate_id,leave_day,start_leave) values(l,id,reasons,1,i,days_required,leave_start);
+insert into leave_application(leave_id,applicant_id,reason,position,administrate_id,end_leave,start_leave) values(l,id,reasons,1,i,leave_end,leave_start);
 t=1;
 end if;
 update const set leave_id=leave_id+1;

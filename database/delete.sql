@@ -1,0 +1,13 @@
+-- drop table const;
+drop table employees;
+drop table hod;
+drop table dean;
+drop table leave_application;
+drop table ranks;
+drop table leave_database;
+drop table director;
+drop table dean_database;
+drop table hod_database;
+drop table paper_trail;
+drop table employees_database;
+drop table director_database;

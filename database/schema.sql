@@ -54,6 +54,10 @@ create table ranks(
     rank int unique,
     type_of_faculty varchar(15) primary key
 );
+-- dean = dean
+-- associate dean = adean
+-- director = director
+-- hod=hod 
 
 create table leave_database(
     leave_id int,
@@ -82,7 +86,7 @@ create table dean_database(
 
 create table hod_database(
     hod_id int,
-    dept_name varchar(5),
+    dept varchar(5),
 	start_time date,
     end_time date
 );
@@ -110,4 +114,4 @@ create table director_database(
     end_time date
 );
 
---insert into const values(2017000,1,10);
+insert into const values(201700,1,10);

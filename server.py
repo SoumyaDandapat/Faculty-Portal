@@ -179,6 +179,8 @@ def admin():
         elif(input["submit"]=="route"):
             first=input["P1"]
             second=input["p2"]
+            if(first==second):
+                second="NA"
             res=pobj.change_route(first,second)
             if(res==False):
                 flash("your previuos attempt was unsuccesfull")

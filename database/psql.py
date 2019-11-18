@@ -116,9 +116,9 @@ class psql:
                 check1=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
                 check1=self.cur.fetchone()[0]
                 if check1 =='hod':
-                    self.cur.execute("update hod set leave_array=leave_array||{}",data["leave_id"])
+                    self.cur.execute("update hod set leave_array=leave_array||{} where dept={}".format(data["leave_id"]),data["dept"])
                 else:
-                    self.cur.execute("update dean set leave_array=leave_array||{}",data["leave_id"])
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='faculty affairs'",data["leave_id"])
             else:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],10)
                 self.cur.execute("update director set leave_array=leave_array||{}".format(data["leave_id"]))
@@ -156,7 +156,12 @@ class psql:
             check=self.cur.fetchone()[0]
             if check == 1 and data["action"]=='y':
                 self.cur.execute("update leave_application set position ={} ".format(temporary+1))
-                ftype=self.cur.execute("select type_of_faculty from ranks where rank= {}")
+                ftype=self.cur.execute("select type_of_faculty from ranks where rank= {}".format(temporary+1))
+                ftype=self.cur.fetchone()[0]
+                if ftype =='hod':
+                    self.cur.execute("update hod set leave_array=leave_array||{}",data["leave_id"])
+                else:
+                    self.cur.execute("update dean set leave_array=leave_array||{} where ",data["leave_id"])
 
             if check == 0 and data["action"]=='y':
                 self.cur.execute("update leave_application set leave_status='a';")
@@ -175,7 +180,7 @@ class psql:
         time=self.cur.execute("select current_date;")
         time=self.cur.fetchone()[0]
         if data["dept"] in ["CSE",'EE','ME']:
-            flag=self.cur.execute("select count(*) from employees where eid={} and dept='{}' ;".format(data["eid"],department))
+            flag=self.cur.execute("select count(*) from employees where eid={} and dept='{}' ;".format(data["eid"],data["dept"]))
             flag=self.cur.fetchone()[0]
             if flag==0:
                 return False

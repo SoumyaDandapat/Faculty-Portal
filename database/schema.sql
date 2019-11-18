@@ -19,7 +19,7 @@ create table employees
 create table hod
 (   
     hod_id int,
-    dept_name varchar(20),
+    dept varchar(20),
 	start_time date,
     end_time date,
     leave_array int array,

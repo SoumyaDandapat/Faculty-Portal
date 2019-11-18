@@ -86,7 +86,7 @@ class psql:
         return False
 
     def get_leaves(self,data):
-        ans=self.cur.execute("select end_leave-start_leave from employees where eid={}".format(data))
+        ans=self.cur.execute("select leaves_left from employees where eid={}".format(data))
         ans=self.cur.fetchone()[0]
         if ans < 0:
             return 0
@@ -113,8 +113,15 @@ class psql:
             flag3=self.cur.fetchone()[0]
             if flag2==0 and flag3==0:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],1)
+                check1=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
+                check1=self.cur.fetchone()[0]
+                if check1 =='hod':
+                    self.cur.execute("update hod set leave_array=leave_array||{}",data["leave_id"])
+                else:
+                    self.cur.execute("update dean set leave_array=leave_array||{}",data["leave_id"])
             else:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],10)
+                self.cur.execute("update director set leave_array=leave_array||{}".format(data["leave_id"]))
             self.cur.execute("update const set leave_id=leave_id+1;")
             return new_lid
     
@@ -142,13 +149,20 @@ class psql:
         flag3=self.cur.execute("select count(*) from director where director_id={}",data["eid"])
         flag3=self.cur.fectchone()[0]
         if flag1 == 1 or flag2==1:
-            temporary=self.cur.execute("select posistion from leave_application where leave_id={}",data["leave_id"])
+            temporary=self.cur.execute("select position from leave_application where leave_id={}",data["leave_id"])
             temporary=self.cur.fetchone()[0]
             self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id,lid) values('{}','{}',{},{},{})",data["action"],time,temporary,data["eid"],data["leave_id"])
             check=self.cur.execute("select count(*) from ranks where rank={}".format(temporary+1))
             check=self.cur.fetchone()[0]
-            if check == 1:
+            if check == 1 and data["action"]=='y':
                 self.cur.execute("update leave_application set position ={} ".format(temporary+1))
+                ftype=self.cur.execute("select type_of_faculty from ranks where rank= {}")
+
+            if check == 0 and data["action"]=='y':
+                self.cur.execute("update leave_application set leave_status='a';")
+            
+            if data["action"] =='n':
+                self.cur.execute("update leave_application set leave_status='r'")
 
         if flag3 ==1:
             temp='director'

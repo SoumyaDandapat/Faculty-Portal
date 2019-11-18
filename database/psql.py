@@ -85,7 +85,7 @@ class psql:
         return False
 
     def get_leaves(self,data):
-        ans=self.cur.execute("select leaves_left from employees where eid={}".format(data))
+        ans=self.cur.execute("select end_leave-start_leave from employees where eid={}".format(data))
         ans=self.cur.fetchone()[0]
         if ans < 0:
             return 0
@@ -98,18 +98,24 @@ class psql:
         new_lid =self.cur.fetchone() [0]
         leaves=self.cur.execute("SELECT leaves_left from const where id<>0;")
         leaves =self.cur.fetchone() [0]
-        leaves_left=self.cur.execute("SELECT leaves_left from employees where eid=%s",data["eid"])
+        leaves_left=self.cur.execute("SELECT end_leave-start_leave from employees where eid=%s",data["eid"])
         leaves_left=self.cur.fetchone()[0]
+        flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id=%s",data["eid"])
+        flag=self.cur.fetchone()[0]
 
-        if leaves_left-data["days"] < -leaves:
+        if leaves_left-data["days"] < -leaves or flag==1:
             return -1
         else :
-            result=self.cur.execute("SELECT * from create_leave(%s,%s,%s)",data["eid"],data["reason"],data["days"] )
-            result=self.cur.fetchone()[0]
-            if result == 0:
-                return -1
+            flag2=self.cur.execute("select count(*) from hod where hod_id=%s",data["eid"])
+            flag2=self.cur.fetchone()[0]
+            flag3=self.cur.execute("select count(*) from dean where dean_id=%s",data["eid"])
+            flag3=self.cur.fetchone()[0]
+            if flag2==0 and flag3==0:
+                self.cur.execute("insert into leave_application values(%s,%s,%s,%s,%s,%s)",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],1)
             else:
-                return new_lid
+                self.cur.execute("insert into leave_application values(%s,%s,%s,%s,%s,%s)",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],10)
+            self.cur.execute("update const set leave_id=leave_id+1;")
+            return new_lid
     
     def set_leaves(self,data):
         self.conn.commit()

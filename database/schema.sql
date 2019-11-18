@@ -39,7 +39,7 @@ create table leave_application(
     leave_id int primary key default 0,
 	applicant_id int,
     reason varchar(200),
-    leave_day int,
+    end_leave date,
     start_leave date, 
 	position int,
 	--administrate_id int,
@@ -58,7 +58,7 @@ create table ranks(
 create table leave_database(
     leave_id int,
     eid int,
-    leave_day int,
+    end_leave date,
     start_leave date,
     reason varchar(200),
     leave_status varchar(1),

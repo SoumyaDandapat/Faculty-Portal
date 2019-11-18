@@ -3,8 +3,8 @@ returns trigger as
 $$
 begin
 if new.leave_status='a'or new.leave_status='r' then
-insert into leave_database(leave_id,eid,leave_day,reason,leave_status,comments,start_leave)
-values(new.leave_id,new.applicant_id,new.leave_day,new.reason,new.leave_status,new.comment,new.start_leave);
+insert into leave_database(leave_id,eid,end_leave,reason,leave_status,comments,start_leave)
+values(new.leave_id,new.applicant_id,new.end_leave,new.reason,new.leave_status,new.comment,new.start_leave);
 delete from leave_application
 where leave_id=new.leave_id;
 end if;

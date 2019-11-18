@@ -55,6 +55,7 @@
             <button class="btn btn-primary" style='margin-right:20px'  onclick="location.href = '/logout'" type="logout" >Logout</button>            
             </div>  
         </nav>
+    <hr>
         {% with messages = get_flashed_messages() %}
         {% if messages %}
            {% for message in messages %}
@@ -65,6 +66,7 @@
 
     {% block content %}
     {% endblock %}
+    <hr>
 </body>
 
 </html>

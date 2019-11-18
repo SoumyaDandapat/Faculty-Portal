@@ -22,6 +22,7 @@ create table hod
     dept_name varchar(20),
 	start_time date,
     end_time date,
+    leave_array int array,
     foreign key(hod_id) references employees(eid) 
 );
 
@@ -30,6 +31,7 @@ create table dean(
     dean_type varchar(40),
 	start_time date,
     end_time date,
+    leave_array int array,
     foreign key(dean_id) references employees(eid)
 );
 
@@ -40,9 +42,10 @@ create table leave_application(
     leave_day int,
     start_leave date, 
 	position int,
-	administrate_id int,
+	--administrate_id int,
+    requested_state varchar(1) default 'n',
     comment varchar(200),
-    leave_status varchar(1) default 'n',
+    leave_status varchar(1) default 'p',
 	foreign key(administrate_id) references employees(eid),
 	foreign key(applicant_id) references employees(eid)
 );
@@ -66,6 +69,7 @@ create table director(
     director_id int,
 	start_time date,
     end_time date,
+    leave_array int array,
     foreign key(director_id) references employees(eid)
 );
 
@@ -87,7 +91,8 @@ create table paper_trail(
     action_taken varchar(1),
     time_stamp date,
     position varchar(20),
-    id int
+    id int,
+    lid int
 );
 
 create table employees_database(

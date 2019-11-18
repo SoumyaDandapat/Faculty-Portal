@@ -6,14 +6,14 @@
 <script>
     
     function TDate() {
-    var UserDate = document.getElementById("sdate").value;
+    var UserDate = document.getElementById("start_time").value;
     var ToDate = new Date();
 
     if (new Date(UserDate).getTime() <= ToDate.getTime()) {
           alert("The Date must be Bigger or Equal to today date");
           return false;
      }
-     UserDate2 = document.getElementById("edate").value;
+     UserDate2 = document.getElementById("end_time").value;
      if (new Date(UserDate2).getTime() <= new Date(UserDate).getTime()) {
           alert("The Date must be Bigger or Equal to start date");
           return false;
@@ -112,11 +112,11 @@
 <div class="form-group">
     <div class="col-md-3"> 
     START DATE
-    <input type="date" id="sdate" class="form-control" name="sdate" required>
+    <input type="date" id="start_time" class="form-control" name="start_time" required>
     </div>
     <div class="col-lg-5">
     END DATE
-    <input type="date" id="edate" class="form-control" name="edate" required>
+    <input type="date" id="end_time" class="form-control" name="end_time" required>
     </div>
    
 </div>

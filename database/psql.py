@@ -99,34 +99,34 @@ class psql:
         new_lid =self.cur.fetchone() [0]
         leaves=self.cur.execute("SELECT leaves_left from const where id<>0;")
         leaves =self.cur.fetchone() [0]
-        leaves_left=self.cur.execute("SELECT end_leave-start_leave from employees where eid=%s",data["eid"])
+        leaves_left=self.cur.execute("SELECT end_leave-start_leave from employees where eid={}",data["eid"])
         leaves_left=self.cur.fetchone()[0]
-        flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id=%s",data["eid"])
+        flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id={}",data["eid"])
         flag=self.cur.fetchone()[0]
-
-        if leaves_left-data["days"] < -leaves or flag==1:
+        temp=data["end_time"]-data["start_time"]
+        if leaves_left- temp < -leaves or flag==1:
             return -1
         else :
-            flag2=self.cur.execute("select count(*) from hod where hod_id=%s",data["eid"])
+            flag2=self.cur.execute("select count(*) from hod where hod_id={}",data["eid"])
             flag2=self.cur.fetchone()[0]
-            flag3=self.cur.execute("select count(*) from dean where dean_id=%s",data["eid"])
+            flag3=self.cur.execute("select count(*) from dean where dean_id={}",data["eid"])
             flag3=self.cur.fetchone()[0]
             if flag2==0 and flag3==0:
-                self.cur.execute("insert into leave_application values(%s,%s,%s,%s,%s,%s)",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],1)
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],1)
             else:
-                self.cur.execute("insert into leave_application values(%s,%s,%s,%s,%s,%s)",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],10)
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],10)
             self.cur.execute("update const set leave_id=leave_id+1;")
             return new_lid
     
     def set_leaves(self,data):
         self.conn.commit()
-        self.cur.execute("UPDATE const set leaves_left= %s where id<>0",data["leaves"])
+        self.cur.execute("UPDATE const set leaves_left= {}".format(data["leaves"]))
 
     def add_comment(self,data):
         self.conn.commit()
         comment=self.cur.execute("SELECT comment from leave_application where leave_id=%s",data["leave_id"])
         comment=self.cur.fetchone()[0]
-        employee_name=self.cur.execute("SELECT name from employees where eid=%s",data["id"])
+        employee_name=self.cur.execute("SELECT name from employees where eid=%s",data["eid"])
         employee_name=self.cur.fetchone()[0]
         comment=comment+'&'+employee_name+data["new_comment"]
         self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
@@ -135,14 +135,21 @@ class psql:
         self.conn.commit()
         time=self.cur.execute("select current_date;")
         time=self.cur.fetchone()[0]
-        flag1=self.cur.execute("select count(*) from hod where hod_id=%s",data["id"])
+        flag1=self.cur.execute("select count(*) from hod where hod_id={}",data["eid"])
         flag1=self.cur.fectchone()[0]
-        flag2=self.cur.execute("select count(*) from dean where dean_id=%s",data["id"])
+        flag2=self.cur.execute("select count(*) from dean where dean_id={}",data["eid"])
         flag2=self.cur.fectchone()[0]
-        flag3=self.cur.execute("select count(*) from director where director_id=%s",data["id"])
+        flag3=self.cur.execute("select count(*) from director where director_id={}",data["eid"])
         flag3=self.cur.fectchone()[0]
         if flag1 == 1 or flag2==1:
-            self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id,lid) values(%s,%s,%s,%s,%s)",data["action"],time,data["position"],data["id"],data["leave_id"])
+            temporary=self.cur.execute("select posistion from leave_application where leave_id={}",data["leave_id"])
+            temporary=self.cur.fetchone()[0]
+            self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id,lid) values('{}','{}',{},{},{})",data["action"],time,temporary,data["eid"],data["leave_id"])
+            check=self.cur.execute("select count(*) from ranks where rank={}".format(temporary+1))
+            check=self.cur.fetchone()[0]
+            if check == 1:
+                self.cur.execute("update leave_application set position ={} ".format(temporary+1))
+
         if flag3 ==1:
             temp='director'
             self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id,lid) values(%s,%s,%s,%s,%s)",data["action"],time,temp,data["id"],data["leave_id"])
@@ -162,22 +169,22 @@ class psql:
                 flag2=self.cur.execute("select count(*) from hod where dept_name='{}';".format(data["dept"]))
                 flag2=self.cur.fetchone()[0]
                 if flag2 == 1:
-                    attributes=self.cur.execute("select * from hod where dept_name=%s;",data["dept"])
+                    attributes=self.cur.execute("select * from hod where dept_name='{}';".format(data["dept"]))
                     attributes=self.cur.fetchone()
-                    self.cur.execute("insert into hod_database values(%s,%s,%s,%s);",attributes[0],attributes[1],attributes[2],time)
-                    self.cur.execute("update hod set hod_id=%s,start_time=%s,end_time=%s where dept=%s;",data["eid"],data["start_time"],data["end_time"],data["dept"])
+                    self.cur.execute("insert into hod_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
+                    self.cur.execute("update hod set hod_id={},start_time='{}',end_time='{}' where dept='{}';".format(data["eid"],data["start_time"],data["end_time"],data["dept"]))
                 else:
-                    self.cur.execute("insert into hod values(%s,%s,%s,%s);",data["eid"],data["dept"],data["start_time"],data["end_time"])
+                    self.cur.execute("insert into hod values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
                 return True
         if data["dept"]=='director':
             flag=self.cur.execute("select count(*) from director;")
             if flag==1:
                 attributes=self.cur.execute("select * from director;")
                 attributes=self.cur.fetchone()
-                self.cur.execute("insert into director_database values(%s,%s,%s);",attributes[0],attributes[1],time)
-                self.cur.execute("update director set director_id=%s,start_time=%s,end_time=%s;",data["eid"],data["start_time"],data["end_time"])
+                self.cur.execute("insert into director_database values({},'{}','{}');".format(attributes[0],attributes[1],time))
+                self.cur.execute("update director set director_id={},start_time='{}',end_time='{}';".format(data["eid"],data["start_time"],data["end_time"]))
             else:
-                self.cur.execute("insert into director values(%s,%s,%s);",data["eid"],data["start_time"],data["end_time"])
+                self.cur.execute("insert into director values({},'{}','{}');".format(data["eid"],data["start_time"],data["end_time"]))
             return True
         if data["dept"]=='faculty affairs':
             flag=self.cur.execute("select count(*) from dean where dean_type='faculty affairs';")
@@ -185,10 +192,10 @@ class psql:
             if flag==1:
                 attributes=self.cur.execute("select * from dean where dean_type='faculty affairs'; ")
                 attributes=self.cur.fetchone()
-                self.cur.execute("insert into dean_database values(%s,%s,%s,%s);",attributes[0],attributes[1],attributes[2],time)
-                self.cur.execute("update dean set dean_id=%s,start_time=%s,end_time=%s where dean_type='faculty affairs';",data["eid"],data["start_time"],data["end_time"])
+                self.cur.execute("insert into dean_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
+                self.cur.execute("update dean set dean_id={},start_time='{}',end_time='{}' where dean_type='faculty affairs';",data["eid"],data["start_time"],data["end_time"])
             else:
-                self.cur.execute("insert into dean values(%s,%s,%s,%s);",data["eid"],data["dept"],data["start_time"],data["end_time"])
+                self.cur.execute("insert into dean values(%s,'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
             return True
         if data["dept"]=='associate faculty affairs':
             flag=self.cur.execute("select count(*) from dean where dean_type='associate faculty affairs';")
@@ -196,11 +203,8 @@ class psql:
             if flag==1:
                 attributes=self.cur.execute("select * from dean where dean_type='associate faculty affairs'; ")
                 attributes=self.cur.fetchone()
-                self.cur.execute("insert into dean_database values(%s,%s,%s,%s);",attributes[0],attributes[1],attributes[2],time)
-                self.cur.execute("update dean set dean_id=%s,start_time=%s,end_time=%s where dean_type=' associate faculty affairs';",data["eid"],data["start_time"],data["end_time"])
+                self.cur.execute("insert into dean_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
+                self.cur.execute("update dean set dean_id={},start_time='{}',end_time='{}' where dean_type=' associate faculty affairs';".format(data["eid"],data["start_time"],data["end_time"]))
             else:        
-                self.cur.execute("insert into dean values(%s,%s,%s,%s);",data["eid"],data["dept"],data["start_time"],data["end_time"])
+                self.cur.execute("insert into dean values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
             return True
-
-   # def leave(self,data):
-   #     self.conn.commit()

@@ -1,4 +1,4 @@
-from flask import Flask, session, redirect, request, url_for
+from flask import Flask, session, redirect, request, url_for,flash
 from flask.templating import render_template
 from database.nosql import nosql
 from database.psql import psql
@@ -99,6 +99,7 @@ def register_page():
             nobj.insert_data({"eid":eid,"name":input["name"],"email":input["email"],"department":input["dept"]})
             return render_template("registration_successfull.html",eid=str(eid))
         else:
+            flash("Kindly use a different email address")
             return redirect(url_for("register_page"))
 
 @app.route("/delete",methods=["GET","POST"])
@@ -145,6 +146,7 @@ def personal_profile():
                 return redirect(url_for("personal_profile"))
     else:
         return redirect(url_for("login"))
+        
 
 @app.route("/admin",methods=["GET","POST"])
 def admin():
@@ -157,30 +159,81 @@ def admin():
         input=request.form.to_dict()
         if(input["submit"]=="promotion"):
             res=pobj.promotion(input)
-            if(!res):
-                
+            if(res==False):
+                flash("your previuos attempt was unsuccesfull")
+                return redirect(url_for("admin"))
+            else:
+                flash("your previuos attempt was succesfull")
+                return redirect(url_for("admin"))
         elif(input["submit"]=="leaves"):
-            return "l"
+            res=pobj.change_leaves(input)
+            if(res==False):
+                flash("your previuos attempt was unsuccesfull")
+                return redirect(url_for("admin"))
+            else:
+                flash("your previuos attempt was succesfull")
+                return redirect(url_for("admin"))
         elif(input["submit"]=="route"):
-            return "n"
+            res=pobj.change_route(input)
+            if(res==False):
+                flash("your previuos attempt was unsuccesfull")
+                return redirect(url_for("admin"))
+            else:
+                flash("your previuos attempt was succesfull")
+                return redirect(url_for("admin"))
+            
 
         
 @app.route("/dashboard/new_application",methods=["GET","POST"])
 def new_application():
+    if 'username' not in session:
+        return redirect(url_for("login"))
+    eid=session['username']
     if request.method=="GET":
         return render_template("leave_application.html")
     else:
-        # save the updated application
-        return redirect(url_for("dashboard"))
+        input=request.form.to_dict()
+        res=pobj.apply_leave(input)
+        if(res):
+            flash("Applied successfully")
+            return redirect(url_for("dashboard"))
+        else:
+            flash("previous application attempt was not possible")
+            return redirect(url_for("dashboard"))
 
-@app.route("/application_status",methods=["GET","POST"])
-def application_status():
+@app.route("/dashboard/application_status_history",methods=["GET","POST"])
+def application_status_history():
+    if 'username' not in session:
+        return redirect(url_for("login"))
+    eid=session['username']
     if request.method=="GET":
-        return render_template("application_status.html")
+        lis=pobj.get_leave_history(eid)
+        return render_template("leave_history.html",data=lis)
     else:
-        # save the updated status
+        lid=request.form["sub"]
         return redirect(url_for("dashboard"))
     
+@app.route("/application_status",methods=["GET","POST"])
+def application_status():
+    if 'username' not in session:
+        return redirect(url_for("login"))
+    eid=session['username']
+    if request.method=="POST":
+        input=request.form.to_dict()
+        if "sub" in input:
+            lid=input["sub"]
+            data=pobj.get_leave_data(lid)
+            return render_template("leave_detail.html",data=data)
+        else:
+            res=pobj.add_detail(input)
+            if(res):
+                flash("your previous operation was successfull")
+                return redirect(url_for("application_status_history"))
+            else:
+                flash("your previous operation was not successfull")
+                return redirect(url_for("application_status_history"))
+
+
 
 
 #os.system("google-chrome /home/nikhil/Desktop/cs301/project/Faculty-Portal/login_page.html")

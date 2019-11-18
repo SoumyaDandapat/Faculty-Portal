@@ -73,7 +73,7 @@ create table dean_database(
     dean_id int,
     dean_type varchar(15),
 	start_time date,
-    end_time date
+    end_time date   
 );
 
 create table hod_database(

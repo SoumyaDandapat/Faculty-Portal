@@ -157,8 +157,11 @@ def admin():
         return render_template("admin_base.html",lis=nobj.get_list_pretty())
     else:
         input=request.form.to_dict()
+        tedi=int(input["eid"],10)
+        input["eid"]=tedi
+        print(input)
         if(input["submit"]=="promotion"):
-            res=pobj.promotion(input)
+            res=pobj.promote(input)
             if(res==False):
                 flash("your previuos attempt was unsuccesfull")
                 return redirect(url_for("admin"))

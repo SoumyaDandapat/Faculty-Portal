@@ -196,6 +196,7 @@ def new_application():
         return render_template("leave_application.html")
     else:
         input=request.form.to_dict()
+        input["eid"]=eid
         res=pobj.apply_leave(input)
         if(res):
             flash("Applied successfully")

@@ -1,5 +1,5 @@
 import psycopg2
-
+from datetime import datetime
 class psql:
 
     def __init__(self):
@@ -9,7 +9,7 @@ class psql:
         self.conn = None
         try:
             print('Connecting to the PostgreSQL database...')
-            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "postgres", host = "127.0.0.1", port = "5432")
+            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "Jon1114", host = "127.0.0.1", port = "5432")
             self.conn.autocommit = True
             self.cur=self.conn.cursor()
             # create a cursor
@@ -93,18 +93,21 @@ class psql:
         else:
             return ans
     
-    def insert_leave(self,data):
+    def apply_leave(self,data):
         self.conn.commit()
         new_lid=self.cur.execute("SELECT leave_id from const where id<>0;")
         new_lid =self.cur.fetchone() [0]
         leaves=self.cur.execute("SELECT leaves_left from const where id<>0;")
         leaves =self.cur.fetchone() [0]
-        leaves_left=self.cur.execute("SELECT end_leave-start_leave from employees where eid={}",data["eid"])
+        leaves_left=self.cur.execute("SELECT leaves_left from employees where eid={};".format(data["eid"]))
         leaves_left=self.cur.fetchone()[0]
-        flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id={}",data["eid"])
+        flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id={}".format(data["eid"]))
         flag=self.cur.fetchone()[0]
-        temp=data["end_time"]-data["start_time"]
-        if leaves_left- temp < -leaves or flag==1:
+        t=self.cur.execute("select {}-{};".format(data["edate"]),data["sdate"])
+        #end_date=datetime.strptime(data["edate"], ' %y/%m/%d')
+        #start_date=datetime.strptime(data["sdate"], ' %y/%m/%d')
+        #temp=end_date-start_date
+        if leaves_left- t < -leaves or flag==1:
             return -1
         else :
             flag2=self.cur.execute("select count(*) from hod where hod_id={}",data["eid"])
@@ -112,26 +115,28 @@ class psql:
             flag3=self.cur.execute("select count(*) from dean where dean_id={}",data["eid"])
             flag3=self.cur.fetchone()[0]
             if flag2==0 and flag3==0:
-                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],1)
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_time"],data["start_time"],1)
                 check1=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
                 check1=self.cur.fetchone()[0]
-                if check1 =='hod':
+                if check1 =='HOD':
                     self.cur.execute("update hod set leave_array=leave_array||{} where dept={}".format(data["leave_id"]),data["dept"])
-                else:
+                if check1 =='DFA':
                     self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='faculty affairs'",data["leave_id"])
+                if check1 =='ADFA':
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='associate faculty affairs'",data["leave_id"])
             else:
-                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_leave"],data["start_leave"],10)
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})",new_lid,data["eid"],data["reason"],data["end_time"],data["start_time"],10)
                 self.cur.execute("update director set leave_array=leave_array||{}".format(data["leave_id"]))
             self.cur.execute("update const set leave_id=leave_id+1;")
             return new_lid
     
-    def set_leaves(self,data):
+    def change_leaves(self,data):
         self.conn.commit()
         self.cur.execute("UPDATE const set leaves_left= {}".format(data["leaves"]))
 
     def add_comment(self,data):
         self.conn.commit()
-        comment=self.cur.execute("SELECT comment from leave_application where leave_id=%s",data["leave_id"])
+        comment=self.cur.execute("SELECT comment from leave_application where leave_id=%s".format(data["leave_id"]))
         comment=self.cur.fetchone()[0]
         employee_name=self.cur.execute("SELECT name from employees where eid=%s",data["eid"])
         employee_name=self.cur.fetchone()[0]
@@ -155,17 +160,20 @@ class psql:
             check=self.cur.execute("select count(*) from ranks where rank={}".format(temporary+1))
             check=self.cur.fetchone()[0]
             if check == 1 and data["action"]=='y':
-                self.cur.execute("update leave_application set position ={} ".format(temporary+1))
+                self.cur.execute("update leave_application set position ={} where leave_id={}".format(temporary+1,data["leave_id"]))
                 ftype=self.cur.execute("select type_of_faculty from ranks where rank= {}".format(temporary+1))
                 ftype=self.cur.fetchone()[0]
-                if ftype =='hod':
-                    self.cur.execute("update hod set leave_array=leave_array||{}",data["leave_id"])
-                else:
-                    self.cur.execute("update dean set leave_array=leave_array||{} where ",data["leave_id"])
+                if ftype =='HOD':
+                    self.cur.execute("update hod set leave_array=leave_array||{} where dept='{}'",data["leave_id"],data["dept"])
+                if ftype =='DFA':
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='faculty affairs' ",data["leave_id"])
+                if ftype =='ADFA':
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='associate faculty affairs' ",data["leave_id"])
+
 
             if check == 0 and data["action"]=='y':
                 self.cur.execute("update leave_application set leave_status='a';")
-            
+                self.cur.execute("update employees set leaves_left=leaves_left-{}".format(data["end_date"]-data["start_date"]))
             if data["action"] =='n':
                 self.cur.execute("update leave_application set leave_status='r'")
 
@@ -227,3 +235,19 @@ class psql:
             else:        
                 self.cur.execute("insert into dean values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
             return True
+
+    def change_route(self,data):
+        self.conn.commit()
+        self.cur.execute("delete from ranks where rank<>10;")
+        if data["first"]=='HOD':
+            self.cur.execute("insert into ranks values('HOD',1);")
+        if data["first"]=='DFA':
+            self.cur.execute("insert into ranks values('DFA',1);")
+        if data["first"]=='ADFA':
+            self.cur.execute("insert into ranks values('ADFA',1);")
+        if data["second"]=='HOD':
+            self.cur.execute("insert into ranks values('HOD',1);")
+        if data["second"]=='DFA':
+            self.cur.execute("insert into ranks values('DFA',1);")
+        if data["second"]=='ADFA':
+            self.cur.execute("insert into ranks values('ADFA',1);")

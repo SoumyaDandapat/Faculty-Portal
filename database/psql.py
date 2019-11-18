@@ -139,7 +139,7 @@ class psql:
         self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
 
     def change_route(self,data):
-        
+        return True
 
     def act_on_leave(self,data):
         self.conn.commit()

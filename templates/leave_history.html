@@ -1,0 +1,109 @@
+{%extends "base.html" %}
+ 
+{%block content%}
+<br>
+
+<div class="col-lg-2"></div>
+<div class="col-lg-8">Pending</div>
+{% for i in application %} 
+{% if i["status"]=="P" %}
+<div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg-8">
+        
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="card-body">
+                    <div class="col-md-1">
+                        {{application["status"]}}
+                    </div>
+                    <div class="col-md-5">
+                        {{application["reason"]}}
+                    </div>
+                    <div class="col-md-2">
+                        {{application["sdate"]}}
+                    </div>
+                    <div class="col-md-2">
+                        {{application["edate"]}}
+                    </div>                            
+                </div>
+                <span class="badge"  type="button" onclick="location.href='./leave/{{application["lid"]}}'">DETAILS
+                </span>
+            </li>
+        </ul> 
+    </div>
+</div>
+
+{% endif %}
+{% endfor%}
+<hr>
+<div class="col-lg-2"></div>
+<div class="col-lg-8">Rejected</div>
+{% for i in application %} 
+{% if i["status"]=="R" %}
+<div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg-8">
+        
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="card-body">
+                    <div class="col-md-1">
+                        {{application["status"]}}
+                    </div>
+                    <div class="col-md-5">
+                        {{application["reason"]}}
+                    </div>
+                    <div class="col-md-2">
+                        {{application["sdate"]}}
+                    </div>
+                    <div class="col-md-2">
+                        {{application["edate"]}}
+                    </div>                            
+                </div>
+                <span class="badge"  type="button" onclick="location.href='./leave/{{application["lid"]}}'">DETAILS
+                </span>
+            </li>
+        </ul> 
+    </div>
+</div>
+
+{% endif %}
+{% endfor%}
+<hr>
+<div class="col-lg-2"></div>
+<div class="col-lg-8">Accepted</div>
+{% for i in application %} 
+{% if i["status"]=="A" %}
+<div class="row">
+    <div class="col-lg-2"></div>
+    <div class="col-lg-8">
+        
+        <ul class="list-group">
+            <li class="list-group-item">
+                <div class="card-body">
+                    <div class="col-md-1">
+                        {{application["status"]}}
+                    </div>
+                    <div class="col-md-5">
+                        {{application["reason"]}}
+                    </div>
+                    <div class="col-md-2">
+                        {{application["sdate"]}}
+                    </div>
+                    <div class="col-md-2">
+                        {{application["edate"]}}
+                    </div>                            
+                </div>
+                <!-- <span class="badge"  type="sub" onclick="location.href='./leave/{{application["lid"]}}'">DETAILS
+                </span> -->
+                <input class="btn btn-primary" type="submit" name="sub" value= "{{application["lid"]}}" >
+
+            </li>
+        </ul> 
+    </div>
+</div>
+
+{% endif %}
+{% endfor%}
+{%endblock%}

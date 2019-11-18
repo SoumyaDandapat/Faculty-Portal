@@ -14,6 +14,7 @@
         }
     }
 </script>
+
 <div class="container">
     <form class="form-horizontal" role="form" action="./register" method="post">
         <h2>Registration</h2>
@@ -99,9 +100,17 @@
                 <span class="help-block">*Required fields</span>
             </div>
         </div>
+        
         <text style="color: crimson;margin-inline-start: 400px "> * note that personal profile would be edited/added later on </text>
         <br><br>
         <button type="submit" class="btn btn-primary btn-block" id="submit">Register</button>
+        <!-- {% with messages = get_flashed_messages() %}
+{% if messages %}
+   {% for message in messages %}
+      <p1>{{ message }}</p1>
+   {% endfor %}
+{% endif %}
+{% endwith %} -->
     </form> <!-- /form -->
     
 </div> <!-- ./container -->

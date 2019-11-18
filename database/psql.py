@@ -143,6 +143,9 @@ class psql:
         comment=comment+'&'+employee_name+data["new_comment"]
         self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
 
+    def change_route(self,data):
+        return True
+
     def act_on_leave(self,data):
         self.conn.commit()
         time=self.cur.execute("select current_date;")
@@ -185,27 +188,31 @@ class psql:
         self.conn.commit()
         department=self.cur.execute("select dept from employees where eid={};".format(data["eid"]))
         department=self.cur.fetchone()[0]
+
         time=self.cur.execute("select current_date;")
         time=self.cur.fetchone()[0]
-        if data["dept"] in ["CSE",'EE','ME']:
-            flag=self.cur.execute("select count(*) from employees where eid={} and dept='{}' ;".format(data["eid"],data["dept"]))
-            flag=self.cur.fetchone()[0]
-            if flag==0:
+
+        if data["dept"] in ["CSE",'EE','ME']: # hod condition
+            if(data["dept"]!=department):
                 return False
+            replace_cond=self.cur.execute("select count(*) from hod where dept='{}';".format(data["dept"]))
+            replace_cond=self.cur.fetchone()[0]
+
+            if(replace_cond==1):
+                attributes=self.cur.execute("select * from hod where dept='{}';".format(data["dept"]))
+                attributes=self.cur.fetchone()
+                self.cur.execute("insert into hod_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
+                self.cur.execute("update hod set hod_id={},start_time='{}',end_time='{}' where dept='{}';".format(data["eid"],data["start_time"],data["end_time"],data["dept"]))
+                
             else:
-                flag2=self.cur.execute("select count(*) from hod where dept='{}';".format(data["dept"]))
-                flag2=self.cur.fetchone()[0]
-                if flag2 == 1:
-                    attributes=self.cur.execute("select * from hod where dept='{}';".format(data["dept"]))
-                    attributes=self.cur.fetchone()
-                    self.cur.execute("insert into hod_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
-                    self.cur.execute("update hod set hod_id={},start_time='{}',end_time='{}' where dept='{}';".format(data["eid"],data["start_time"],data["end_time"],data["dept"]))
-                else:
-                    self.cur.execute("insert into hod values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
-                return True
-        if data["dept"]=='director':
+                self.cur.execute("insert into hod values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
+                
+            return True
+
+        if data["dept"]=='DR':
             flag=self.cur.execute("select count(*) from director;")
-            if flag==1:
+            flag=self.cur.fectchone()[0]
+            if flag==1:#replace condition
                 attributes=self.cur.execute("select * from director;")
                 attributes=self.cur.fetchone()
                 self.cur.execute("insert into director_database values({},'{}','{}');".format(attributes[0],attributes[1],time))
@@ -213,25 +220,25 @@ class psql:
             else:
                 self.cur.execute("insert into director values({},'{}','{}');".format(data["eid"],data["start_time"],data["end_time"]))
             return True
-        if data["dept"]=='faculty affairs':
+        if data["dept"]=='DFA':
             flag=self.cur.execute("select count(*) from dean where dean_type='faculty affairs';")
             flag=self.cur.fetchone()[0]
             if flag==1:
                 attributes=self.cur.execute("select * from dean where dean_type='faculty affairs'; ")
                 attributes=self.cur.fetchone()
                 self.cur.execute("insert into dean_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
-                self.cur.execute("update dean set dean_id={},start_time='{}',end_time='{}' where dean_type='faculty affairs';",data["eid"],data["start_time"],data["end_time"])
+                self.cur.execute("update dean set dean_id={},start_time='{}',end_time='{}' where dean_type='DFA';",data["eid"],data["start_time"],data["end_time"])
             else:
                 self.cur.execute("insert into dean values(%s,'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
             return True
-        if data["dept"]=='associate faculty affairs':
+        if data["dept"]=='ADFA':
             flag=self.cur.execute("select count(*) from dean where dean_type='associate faculty affairs';")
             flag=self.cur.fetchone()[0]
             if flag==1:
                 attributes=self.cur.execute("select * from dean where dean_type='associate faculty affairs'; ")
                 attributes=self.cur.fetchone()
                 self.cur.execute("insert into dean_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
-                self.cur.execute("update dean set dean_id={},start_time='{}',end_time='{}' where dean_type=' associate faculty affairs';".format(data["eid"],data["start_time"],data["end_time"]))
+                self.cur.execute("update dean set dean_id={},start_time='{}',end_time='{}' where dean_type='ADFA';".format(data["eid"],data["start_time"],data["end_time"]))
             else:        
                 self.cur.execute("insert into dean values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
             return True

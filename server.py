@@ -157,10 +157,10 @@ def admin():
         return render_template("admin_base.html",lis=nobj.get_list_pretty())
     else:
         input=request.form.to_dict()
-        tedi=int(input["eid"],10)
-        input["eid"]=tedi
         print(input)
         if(input["submit"]=="promotion"):
+            tedi=int(input["eid"],10)
+            input["eid"]=tedi
             res=pobj.promote(input)
             if(res==False):
                 flash("your previuos attempt was unsuccesfull")
@@ -177,7 +177,9 @@ def admin():
                 flash("your previuos attempt was succesfull")
                 return redirect(url_for("admin"))
         elif(input["submit"]=="route"):
-            res=pobj.change_route(input)
+            first=input["P1"]
+            second=input["p2"]
+            res=pobj.change_route(first,second)
             if(res==False):
                 flash("your previuos attempt was unsuccesfull")
                 return redirect(url_for("admin"))
@@ -240,7 +242,6 @@ def application_status():
 
 
 
-#os.system("google-chrome /home/nikhil/Desktop/cs301/project/Faculty-Portal/login_page.html")
 if __name__ == "__main__":
     initializer()
     

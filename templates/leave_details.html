@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container">
+    <h2>NEW LEAVE APPLICATION DETAILS</h2>
+       <div class="row">
+           <div class="col-3-lg"></div>
+           <div class="col-1-md">
+                Applier: {{data["name"]}}
+           </div>
+       </div> 
+       <div class="row">
+        <div class="col-3-lg"></div>
+        <div class="col-1-md">
+             start date: {{data["sdate"]}}
+        </div>
+        <div class="row">
+            <div class="col-3-lg"></div>
+            <div class="col-1-md">
+                 end date: {{data["edate"]}}
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col-3-lg"></div>
+            <div class="col-1-md">
+                 number of days: {{data["days"]}}
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col-3-lg"></div>
+            <div class="col-1-md">
+                 Status: {{data["status"]}}
+            </div>
+        </div> 
+        <div class="row">
+            <div class="col-3-lg"></div>
+            <div class="col-1-md">
+                 Reason : {{data["reason"]}}
+            </div>
+        </div> 
+    </div> 
+</div> 
+
+<!--  -->
+{% for msg in messages %}
+
+<h1>
+    {{msg["name"]}}
+</h1>
+
+<p1>
+    {{msg["message"]}}
+</p1>
+
+{% endfor %}
+<!--  -->
+
+<form action="/leave" method="POST">
+    <input type="text" placeholder="enter what you would request the applicant">
+    <input class="btn btn-primary" type="submit" name="sub" value="accept" style="background-color: blue;">
+    <input  class="btn btn-primary" type="submit" name="sub" value="reject" style="background-color: blue;" >
+    <input class="btn btn-primary"  type="submit" value="request-comments" style="background-color: blue;">
+</form>
+
+
+{% endblock %}

@@ -86,7 +86,7 @@ create table dean_database(
 
 create table hod_database(
     hod_id int,
-    dept_name varchar(5),
+    dept varchar(5),
 	start_time date,
     end_time date
 );

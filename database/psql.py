@@ -180,10 +180,10 @@ class psql:
             if flag==0:
                 return False
             else:
-                flag2=self.cur.execute("select count(*) from hod where dept_name='{}';".format(data["dept"]))
+                flag2=self.cur.execute("select count(*) from hod where dept='{}';".format(data["dept"]))
                 flag2=self.cur.fetchone()[0]
                 if flag2 == 1:
-                    attributes=self.cur.execute("select * from hod where dept_name='{}';".format(data["dept"]))
+                    attributes=self.cur.execute("select * from hod where dept='{}';".format(data["dept"]))
                     attributes=self.cur.fetchone()
                     self.cur.execute("insert into hod_database values({},'{}','{}','{}');".format(attributes[0],attributes[1],attributes[2],time))
                     self.cur.execute("update hod set hod_id={},start_time='{}',end_time='{}' where dept='{}';".format(data["eid"],data["start_time"],data["end_time"],data["dept"]))

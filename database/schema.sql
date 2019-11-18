@@ -90,13 +90,19 @@ create table paper_trail(
     id int
 );
 
-    create table employee_database(
+create table employees_database(
     eid int,
     name varchar(20),
     email varchar(50) unique,
     dept varchar(5),
     dob date,
     gender varchar(1), 
+);
+
+create table director_database(
+    director_id int,
+	start_time date,
+    end_time date
 );
 
 --insert into const values(2017000,1,10);

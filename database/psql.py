@@ -140,3 +140,67 @@ class psql:
             temp='director'
             self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id) values(%s,%s,%s,%s)",data["action"],time,t,data["id"])
 
+    def promote(self,data):
+        self.conn.commit()
+        department=self.cur.execute("select dept from employees where eid=%s;",data["eid"])
+        department=self.cur.fetchone()[0]
+        time=self.cur.execute("select current_date;")
+        time=self.cur.fetchone()[0]
+        if data["dept"] in ["CSE",'EE','ME']:
+            flag=self.cur.execute("select count(*) from employees where eid=%s and dept=%s ;",data["eid"],department)
+            flag=self.cur.fetchone()[0]
+            if flag==0:
+                return False
+            else:
+                flag2=self.cur.execute("select count(*) from hod where dept_name=%s;",data["dept"])
+                flag2=self.cur.fetchone()[0]
+                if flag2 == 1:
+                    attributes=self.cur.execute("select * from hod where dept_name=%s;",data["dept"])
+                    attributes=self.cur.fetchone()
+                    self.cur.execute("insert into hod_database values(%s,%s,%s,%s);",attributes[0],attributes[1],attributes[2],time)
+                    self.cur.execute("delete from hod where dept=%s;",data["dept"])
+                self.cur.execute("insert into hod values(%s,%s,%s,%s);",data["eid"],data["dept"],data["start_time"],data["end_time"])
+                return True
+        if data["dept"]=='director':
+            flag=self.cur.execute("select count(*) from director;")
+            if flag==1:
+                attributes=self.cur.execute("select * from director;")
+                attributes=self.cur.fetchone()
+                self.cur.execute("insert into director_database values(%s,%s,%s);",attributes[0],attributes[1],time)
+                self.cur.execute("delete from director where director_id=%s;",attributes[0])
+            self.cur.execute("insert into director values(%s,%s,%s);",data["eid"],data["start_time"],data["end_time"])
+            return True
+        if data["dept"]=='faculty affairs':
+            flag=self.cur.execute("select count(*) from dean where dean_type='faculty affairs;")
+            flag=self.cur.fetchone()[0]
+            if flag==1:
+                attributes=self.cur.execute("select * from dean where dean_type='faculty affairs'; ")
+                attributes=self.cur.fetchone()
+                self.cur.execute("insert into dean_database values(%s,%s,%s,%s);",attributes[0],attributes[1],attributes[2],time)
+                self.cur.execute("delete from dean where dean_type='faculty affairs';")
+            self.cur.execute("insert into dean values(%s,%s,%s,%s);",data["eid"],data["dept"],data["start_time"],data["end_time"])
+            return True
+        if data["dept"]=='associate faculty affairs':
+            flag=self.cur.execute("select count(*) from dean where dean_type='associate faculty affairs;")
+            flag=self.cur.fetchone()[0]
+            if flag==1:
+                attributes=self.cur.execute("select * from dean where dean_type='associate faculty affairs'; ")
+                attributes=self.cur.fetchone()
+                self.cur.execute("insert into dean_database values(%s,%s,%s,%s);",attributes[0],attributes[1],attributes[2],time)
+                self.cur.execute("delete from dean where dean_type=' associate faculty affairs';")
+            self.cur.execute("insert into dean values(%s,%s,%s,%s);",data["eid"],data["dept"],data["start_time"],data["end_time"])
+            return True
+        
+
+
+
+
+
+
+
+            
+
+
+
+    def leave(self,data):
+        self.conn.commit()

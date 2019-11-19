@@ -114,7 +114,8 @@ def dashboard():
     if 'username' in session:
         eid=session['username']
         thisyear_leaves=pobj.get_leaves(eid)
-        return render_template("dashboard.html",thisyear=thisyear_leaves)
+        nextyear_leaves=pobj.leaves_next_year(eid)
+        return render_template("dashboard.html",thisyear=thisyear_leaves,nextyear=nextyear_leaves)
     else:
         return redirect(url_for("login"))
 

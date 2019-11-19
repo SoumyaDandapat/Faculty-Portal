@@ -226,7 +226,7 @@ def application_processed_history():
     if 'username' not in session:
         return redirect(url_for("login"))
     eid=session['username']
-    if pobj.isspecial(eid)==False:
+    if pobj.get_position(eid)==0:
         return redirect(url_for("dashboard"))
     # if request.method=="GET":
     processed=pobj.get_processed_leaves(eid)

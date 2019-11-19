@@ -74,7 +74,11 @@
               </div>
             </div>
             <div class="row">
-                    <div class="col-lg-9"></div>
+                    <div class="col-lg-9">
+                      {% if special %}
+                      <button class="btn btn-primary btn-block" onclick="location.href = '/dashboard/application_processeed_history'">PROCESS APPLICATIONS</button>
+                      {% endif %}
+                    </div>
 
               <div class="col-lg-3">
                 <div class="panel panel-danger">

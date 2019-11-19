@@ -105,16 +105,18 @@ create table employees_database(
     email varchar(50) unique,
     dept varchar(5),
     dob date,
-    gender varchar(1), 
+    gender varchar(1) 
 );
 
 create table comments(
     leave_id int,
     dept varchar(10),
-    eid varchar(50) ,
+    eid int ,
     time_stamp TIMESTAMP,
-    comments varchar(5),
-    
+    comments varchar(200),
+    direction int
+    -- o for question
+    -- 1 for answer
     -- FOREIGN key("leave") REFERENCES leave_application("leave_id")
     -- FOREIGN key("eid") REFERENCES employees
 );

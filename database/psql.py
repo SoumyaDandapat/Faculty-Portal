@@ -250,18 +250,21 @@ class psql:
                 self.cur.execute("insert into dean values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
             return True
 
-    def change_route(self,data):
+    def change_route(self,first,second):
         self.conn.commit()
         self.cur.execute("delete from ranks where rank<>10;")
-        if data["first"]=='HOD':
+        print (first,second)
+        if first=='HOD':
             self.cur.execute("insert into ranks values('HOD',1);")
-        if data["first"]=='DFA':
+        if first=='DFA':
             self.cur.execute("insert into ranks values('DFA',1);")
-        if data["first"]=='ADFA':
+        if first=='ADFA':
             self.cur.execute("insert into ranks values('ADFA',1);")
-        if data["second"]=='HOD':
+        if second=='HOD':
             self.cur.execute("insert into ranks values('HOD',1);")
-        if data["second"]=='DFA':
+        if second=='DFA':
             self.cur.execute("insert into ranks values('DFA',1);")
-        if data["second"]=='ADFA':
+        if second=='ADFA':
             self.cur.execute("insert into ranks values('ADFA',1);")
+
+    def leave_next_year(self,data):

@@ -164,6 +164,7 @@ class psql:
         check_applicant=self.get_result("select count(*) from leave_application where leave_id={} and applicant_id={} ".format(leave_id,eid))
         if check_applicant==0:
             self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,dept,eid,comments))
+            self.cur.execute("update leave_application set requested_state='n';")
         else:
             pos=self.get_result("select position from leave_application where leave_id={}".format(leave_id))
             faculty_type=self.get_result("select type_of_faculty from ranks where rank = {}; ".format(pos))
@@ -179,7 +180,8 @@ class psql:
                 receiver=self.get_result("select dean_id from dean where dean_type='ADFA'")
             if faculty_type =='DR':
                 receiver=self.get_result("select director_id from director")
-            
+            self.cur.execute("update leave_application set requested_state='n';")
+            self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,dept,receiver,comments))
         
 
     def get_position(self,eid):# 1 for hod, 2 for dean, 3 for director

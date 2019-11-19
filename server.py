@@ -120,7 +120,7 @@ def dashboard():
         print(res)
         if res=="F":
             ans=False
-        return render_template("dashboard.html",thisyear=thisyear_leaves,nextyear=nextyear_leaves,special=ans)
+        return render_template("dashboard.html",thisyear=thisyear_leaves,nextyear=nextyear_leaves,special=ans,name=eid)
     else:
         return redirect(url_for("login"))
 
@@ -220,10 +220,10 @@ def application_status_history():
     if 'username' not in session:
         return redirect(url_for("login"))
     eid=session['username']
-  
+
     lis=pobj.get_leave_history(eid)
     return render_template("leave_history.html",application=lis)
-   
+
 
 @app.route("/dashboard/application_processeed_history",methods=["GET"])
 def application_processed_history():
@@ -236,7 +236,7 @@ def application_processed_history():
     processed=pobj.get_processed_leaves(eid)
     # return "testing"
     return render_template("leave_history.html",application=processed)
-   
+
 
 
 
@@ -247,34 +247,30 @@ def application_status(num):
         return redirect(url_for("login"))
     eid=session['username']
     if(pobj.iseligible(eid,num)==False):
-        return redirect(url_for("dahboard"))
+        return redirect(url_for("dashboard"))
     if request.method=="GET":
-        # res=pobj.get_position(eid)
         data=pobj.get_leave_details(eid,num)
         data["id"]=eid
+        data["isabletocomment"]=pobj.able_to_comment(num,eid)
         return render_template("leave_details.html",data=data)
     if request.method=="POST":
-        res=pobj.iseligible(eid)
-        if res==False:
-            return redirect(url_for("application-proccesed_history"))
-        else:
-            comment=""
+        comment=""
+        state=2
+        input=request.form.to_dict()
+        if input["sub"]=="accept":
+            state=1
+        elif input["sub"]=="reject":
+            state=0
+        elif input["sub"]=="request-comments":
             state=2
-            input=request.form.to_dict()
-            if input["sub"]=="accept":
-                state=1
-            elif input["sub"]=="reject":
-                state=0
-            elif input["sub"]=="request-comments":
-                state=2
-                comment=input["comment"]
-            res=pobj.update_leave_data(eid,num,state,comment)        
-            if(res):
-                flash("your previous operation was successfull")
-                return redirect(url_for("application_status_history"))
-            else:
-                flash("your previous operation was not successfull")
-                return redirect(url_for("application_status_history"))
+            comment=input["comment"]
+        res=pobj.act_on_leave(eid,num,state,comment)        
+        if(res):
+            flash("your previous operation was successfull")
+            return redirect(url_for("application_status_history"))
+        else:
+            flash("your previous operation was not successfull")
+            return redirect(url_for("application_status_history"))
 
 
 

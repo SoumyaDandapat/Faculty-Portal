@@ -113,7 +113,7 @@ create table comments(
     dept varchar(10),
     eid int ,
     time_stamp TIMESTAMP,
-    comments varchar(200),
+    comments varchar(200)
     --direction int
     -- o for question
     -- 1 for answer

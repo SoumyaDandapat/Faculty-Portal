@@ -13,7 +13,7 @@ class psql:
         self.conn = None
         try:
             print('Connecting to the PostgreSQL database...')
-            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "postgres", host = "127.0.0.1", port = "5432")
+            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "Jon1114", host = "127.0.0.1", port = "5432")
             self.conn.autocommit = True
             self.cur=self.conn.cursor()
             # create a cursor
@@ -115,7 +115,7 @@ class psql:
         flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id={} and leave_status='p'".format(data["eid"]))
         flag=self.cur.fetchone()[0]
         #t=self.cur.execute("select {}-{};".format(data["edate"]),data["sdate"])
-        temp=self.date_dif(data["sdate"],data["edate"])
+        days_leaves=self.date_dif(data["sdate"],data["edate"])
         
         # data["edate"]=str(data["edate"])
         # data["sdate"]=str(data["sdate"])
@@ -127,15 +127,25 @@ class psql:
         # # start_date=datetime.strptime(data["sdate"], ' %Y-%m-%d')
         # # temp=end_date-start_date
         # temp=b-a
-        if leaves_left- temp < -leaves or flag==1:
+        extra_days=0
+        if leaves_left-days_leaves< 0:
+            if leaves_left<0:
+                extra_days=days_leaves
+            else:
+                extra_days=days_leaves-leaves_left
+        if leaves_left- days_leaves < -leaves or flag==1:
             return -1
         else :
+            if extra_days!=0:
+                reason=data["reason"]+' and extra '+str(extra_days)+' days from next year are required.'
+            else:
+                reason=data["reason"]
             flag2=self.cur.execute("select count(*) from hod where hod_id={}".format(data["eid"]))
             flag2=self.cur.fetchone()[0]
             flag3=self.cur.execute("select count(*) from dean where dean_id={}".format(data["eid"]))
             flag3=self.cur.fetchone()[0]
             if flag2==0 and flag3==0:
-                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],1))
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],reason,data["edate"],data["sdate"],1))
                 self.cur.execute("update const set leave_id=leave_id+1;")
                 faculty_type=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
                 faculty_type=self.cur.fetchone()[0]
@@ -150,7 +160,7 @@ class psql:
                 if faculty_type =='ADFA':
                     self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='ADFA'".format(new_lid))
             else:
-                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],10))
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],reason,data["edate"],data["sdate"],10))
                 self.cur.execute("update const set leave_id=leave_id+1;")
                 self.cur.execute("update director set leave_array=leave_array||{}".format(new_lid))
             return new_lid

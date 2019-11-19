@@ -31,12 +31,9 @@ class psql:
         self.conn.commit()
         
         new_eid=self.get_result("SELECT id from const where id<>0;")
-        #new_eid =self.cur.fetchone() [0]
         leaves=self.get_result("SELECT leaves_left from const where id<>0;")
-        #leaves =self.cur.fetchone() [0]
         print(new_eid)
         flag=self.get_result("SELECT COUNT(*) from employees where email='{}'".format(data["email"]))
-        #flag=self.cur.fetchone()[0]
         if flag==0: 
             tuple=(data["name"],new_eid,data["email"],data["dept"],data["pass"],data["gender"],data["dob"],leaves)
             print(tuple)
@@ -91,14 +88,12 @@ class psql:
         
         ans=self.cur.execute("SELECT * FROM check_passwd(%s,%s)",(data["eid"],data["pass"]))
         ans=self.cur.fetchone()
-        # print(ans)
         if ans[0] == 'y':
             return True
         return False
 
     def get_leaves(self,data):
         ans=self.get_result("select leaves_left from employees where eid={}".format(data))
-        # ans=self.cur.fetchone()[0]
         if ans < 0:
             return 0
         else:
@@ -169,9 +164,11 @@ class psql:
         self.conn.commit()
         self.cur.execute("UPDATE const set leaves_left= {}".format(data["leaves"]))
 
-    def add_comment(self,eid,leave_id,comments):
+
+    def add_comment(self,eid,leave_id,comments):#checked
+        if self.able_to_comment(leave_id,eid)==False:
+            return False
         self.conn.commit()
-        print("---",comments,"----")
         dept=self.get_position(eid)
         check_applicant=self.get_result("select count(*) from leave_application where leave_id={} and applicant_id={} ".format(leave_id,eid))
         if check_applicant==0:
@@ -180,10 +177,7 @@ class psql:
         else:
             pos=self.get_result("select position from leave_application where leave_id={}".format(leave_id))
             faculty_type=self.get_result("select type_of_faculty from ranks where rank = {}; ".format(pos))
-            #faculty_type=self.cur.fetchone()[0]
-            #print (check1)
             if faculty_type =='HOD':
-                # print(1)
                 dept_type=self.get_result("select dept from employees where eid={}".format(eid))
                 receiver=self.get_result("select hod_id from hod where dept='{}'".format(dept_type))
             if faculty_type =='DFA':
@@ -211,7 +205,7 @@ class psql:
             return "ADFA"
         return "F"
 
-    def date_dif(self,s,e):
+    def date_dif(self,s,e):#checked
         start_date=str(s)
         end_date=str(e)
         date_format = "%Y-%m-%d"
@@ -220,7 +214,10 @@ class psql:
         diff=b-a
         return diff.days
 
-    def able_to_comment(self,leave_id,eid):
+    def able_to_comment(self,leave_id,eid):#checked
+        res=self.get_result("select leave_status from leave_application where leave_id={}".format(leave_id))
+        if res[0]!="p":
+            return False
         applicant=self.get_result("select applicant_id from leave_application where leave_id={}".format(leave_id))
         requested_state=self.get_result("select requested_state from leave_application where leave_id={}".format(leave_id))
         if(applicant==eid):
@@ -240,13 +237,6 @@ class psql:
 
     def act_on_leave(self,eid,leave_id,state,comment):      
         
-        # position=self.get_position(eid)
-        # # if(position=="F"):
-        # #     return False
-        # res=self.get_processed_leaves_id(eid)
-        # print("$$$$$$$$$",res,"$$$$$$")
-        # if leave_id not in res:
-        #     return False
 
         if self.able_to_comment(leave_id,eid)==False:
             return False
@@ -279,66 +269,9 @@ class psql:
             self.cur.excecute("update leave_application set  leave_status='r' where leave_id={}".format(applicant_id))
         elif state==2:# requested comments
             self.add_comment(eid,leave_id,comment)
-            # time=self.get_result("SELECT now()")
-            # self.cur.excecute("update leave_application set value requested_state='y' where leave_id={}".format(applicant_id))
-            # self.cur.execute("insert into comment values({},{},{},{},'{}')".format(leave_id,position,eid,time,comment))
+            
         return True
             
-        
-        # time=self.cur.execute("select current_date;")
-        # time=self.cur.fetchone()[0]
-        # check_hod=self.cur.execute("select count(*) from hod where hod_id={}".format(eid))
-        # check_hod=self.cur.fectchone()[0]
-        # check_dean=self.cur.execute("select count(*) from dean where dean_id={}".format(eid))
-        # check_dean=self.cur.fectchone()[0]
-        # check_director=self.cur.execute("select count(*) from director where director_id={}".format(eid))
-        # check_director=self.cur.fectchone()[0]
-        # if state==1:
-        #     action='y'
-        # else:
-        #     action='n'
-        # if state==2:
-        #     self.cur.execute("update leave_application set requested_state='y';")
-        # else:
-        #     if check_hod == 1 or check_dean==1:
-        #         temporary=self.cur.execute("select position from leave_application where leave_id={}".format(leave_id))
-        #         temporary=self.cur.fetchone()[0]
-        #         self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id,lid) values('{}','{}',{},{},{})".format(action,time,temporary,eid,leave_id))
-        #         check=self.cur.execute("select count(*) from ranks where rank={}".format(temporary+1))
-        #         check=self.cur.fetchone()[0]
-        #         if check == 1 and state==1:
-        #             self.cur.execute("update leave_application set position ={} where leave_id={}".format(temporary+1,leave_id))
-        #             ftype=self.cur.execute("select type_of_faculty from ranks where rank= {}".format(temporary+1))
-        #             ftype=self.cur.fetchone()[0]
-        #             dept=self.cur.execute("select dept from employees where eid={}".format(eid))
-        #             dept=self.cur.fetchone()[0]
-        #             if ftype =='HOD':
-        #                 self.cur.execute("update hod set leave_array=leave_array||{} where dept='{}'".format(leave_id,dept))
-        #             if ftype =='DFA':
-        #                 self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='DFA' ".format(leave_id))
-        #             if ftype =='ADFA':
-        #                 self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='ADFA' ".format(leave_id))
-
-
-        #         if check == 0 and state==1:
-        #             start_date=self.cur.execute("select start_leave from leave_application where leave_id={}".format(leave_id))
-        #             start_date=self.cur.fetchone()[0]
-        #             end_date=self.cur.execute("select end_leave from leave_application where leave_id={}".format(leave_id))
-        #             end_date=self.cur.fetchone()[0]
-        #             start_date=str(start_date)
-        #             end_date=str(end_date)
-        #             date_format = "%Y-%m-%d"
-        #             a = datetime.strptime(start_date, date_format)
-        #             b = datetime.strptime(end_date, date_format)
-        #             diff=b-a
-        #             self.cur.execute("update leave_application set leave_status='a';")
-        #             self.cur.execute("update employees set leaves_left=leaves_left-{}".format(diff.days))
-        #         if state ==0:
-        #             self.cur.execute("update leave_application set leave_status='r'")
-
-        #     if check_director ==1:
-        #         temp='DR'
-        #         self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id,lid) values(%s,%s,%s,%s,%s)",action,time,temp,eid,leave_id)
 
     def promote(self,data):# promoting individuals
         self.conn.commit()
@@ -430,19 +363,6 @@ class psql:
             li=self.get_result("select leave_array from director where director_id={};".format(eid))
         return self.get_leave_list(li)
 
-    # def get_processed_leaves_id(self,eid):
-    #     li=[]
-    #     pos=self.get_position(eid)
-    #     if pos=='HOD':
-    #     # dept=self.get_result("select dept from employees where eid={}".format(eid))
-    #         li=self.get_result("select leave_array from hod where hod_id={}".format(eid))
-    #     if pos in ['DFA','ADFA'] :
-    #     # dept=self.get_result("select dean_type from dean where dean_id={}".format(eid))
-    #         li=self.get_result("select leave_array from dean where dean_id={}".format(eid))
-    #     if pos=='DR':
-    #         li=self.get_result("select leave_array from director where director_id={};".format(eid))
-    #     return li
-
     def leaves_next_year(self,eid):
         leaves_left=self.get_result("select leaves_left from employees where eid={};".format(eid))
         leaves_per_year=self.get_result("select leaves_left from const where id<>0;")
@@ -471,7 +391,6 @@ class psql:
             msg=self.cur.fetchall()
         
         else:   #participant
-            #applicant_type=self.get_position(res[5])
             output=self.cur.execute("select * from comments where leave_id={} and (dept='{}' or eid={}) order by time_stamp;".format(leave_id,self.get_position(eid),eid))
             output=self.cur.fetchall()
             for x in output:
@@ -487,11 +406,8 @@ class psql:
     def get_leave_list(self,lids):
         li=[]
         for y in lids:
-            # temp=[]
             res=self.cur.execute("select leave_id,leave_status,reason,start_leave,end_leave,applicant_id from leave_application where leave_id={}".format(y))
             res=self.cur.fetchone()
-            # for x in res:
-            #     temp.append(x)
             li.append(res)
         return li
 

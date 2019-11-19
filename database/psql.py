@@ -164,7 +164,7 @@ class psql:
         check_applicant=self.get_result("select count(*) from leave_application where leave_id={} and applicant_id={} ".format(leave_id,eid))
         if check_applicant==0:
             self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,dept,eid,comments))
-            self.cur.execute("update leave_application set requested_state='n';")
+            self.cur.execute("update leave_application set requested_state='y';")
         else:
             pos=self.get_result("select position from leave_application where leave_id={}".format(leave_id))
             faculty_type=self.get_result("select type_of_faculty from ranks where rank = {}; ".format(pos))

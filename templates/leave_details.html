@@ -63,26 +63,28 @@
 {% for msg in data["msg"] %}
 <div class="row">
 <div class="col-lg-3"></div>
-<!-- <h1>
-    {{msg["name"]}}
-</h1> -->
-<div class="col-lg-1">
-{{if msg[1]!="F"}}
-<font  color="red">
-    msg[2] said msg[4] at msg[3]    
-</font>
-{% else %}
-<font  color="blue">
-    msg[2] said msg[4] at msg[3]    
-</font>
-{% endif %}
+
+    <div class="col-lg-4">
+    {% if msg[1]!="F" %}
+        <font  color="red">
+            {{msg[2]}} said {{msg[4]}} at {{msg[3]}}    
+        </font>
+    {% else %}
+        <font  color="blue">
+            {{msg[2]}} said {{msg[4]}} at {{msg[3]}}    
+        </font>
+    {% endif %}
     <br><hr><br>
 </div>
 </div>
 {% endfor %}
 <hr><hr>
 <br><br>
-<!--  -->
+<!--  -->\
+<form action="#" method="POST">
+
+
+{% if data["isabletocomment"]==True %}
 <div class="row">
     <div class="col-lg-2"></div>
         <p1>
@@ -90,20 +92,19 @@
             Enter the reply for the request
             {% else %}
             Enter the clarification you need
-            {% endif%}
+            {% endif %}
         </p1>
         <input type="text" name="comment" placeholder="leave empty if not required">
     <!-- </div> -->
 </div>
 
-<form action="#" method="POST">
-    <!-- <input type="text" placeholder="enter what you would request the applicant"> -->
     {% if data["id"]!=data["data"][5] %}
     <input class="btn btn-primary" type="submit" name="sub" value="accept" style="background-color: blue;">
     <input  class="btn btn-primary" type="submit" name="sub" value="reject" style="background-color: blue;" >
     {% endif %}
-    <input class="btn btn-primary"  type="submit" name="sub" value="submit-comments" style="background-color: blue;">
+    <input class="btn btn-primary"  type="submit" name="sub" value="request-comments" style="background-color: blue;">
 </form>
 
+{% endif %}
 
 {% endblock %}

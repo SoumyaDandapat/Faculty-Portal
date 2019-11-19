@@ -111,10 +111,10 @@ create table employees_database(
 create table comments(
     leave_id int,
     dept varchar(10),
-    eid varchar(50) unique,
+    eid varchar(50) ,
+    time_stamp TIMESTAMP,
     comments varchar(5),
-    time_stamp time,
-    date_stamp date,
+    
     -- FOREIGN key("leave") REFERENCES leave_application("leave_id")
     -- FOREIGN key("eid") REFERENCES employees
 );

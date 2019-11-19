@@ -4,9 +4,7 @@ from datetime import datetime
 
 class psql:
 
-    def get_result(self,input):
-        ans=self.cur.excecute(input)
-        return ans[0] 
+    
 
     def __init__(self):
         self.connect()
@@ -23,6 +21,11 @@ class psql:
             
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+    def get_result(self,input):
+        ans=self.cur.execute(input)
+        ans=self.cur.fetchone()[0]
+        # print(input)
+        return ans
 
     def insert(self,data):
         self.conn.commit()
@@ -98,7 +101,7 @@ class psql:
         leaves =self.cur.fetchone() [0]
         leaves_left=self.cur.execute("SELECT leaves_left from employees where eid={};".format(data["eid"]))
         leaves_left=self.cur.fetchone()[0]
-        flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id={}".format(data["eid"]))
+        flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id={} and leave_status='p'".format(data["eid"]))
         flag=self.cur.fetchone()[0]
         #t=self.cur.execute("select {}-{};".format(data["edate"]),data["sdate"])
         temp=self.date_dif(data["sdate"],data["edate"])
@@ -122,18 +125,23 @@ class psql:
             flag3=self.cur.fetchone()[0]
             if flag2==0 and flag3==0:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],1))
+                self.cur.execute("update const set leave_id=leave_id+1;")
                 check1=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
                 check1=self.cur.fetchone()[0]
+                #print (check1)
+                dept=self.cur.execute("select dept from employees where eid={}".format(data["eid"]))
+                dept=self.cur.fetchone()[0]
                 if check1 =='HOD':
-                    self.cur.execute("update hod set leave_array=leave_array||{} where dept={}".format(data["leave_id"],data["dept"]))
+                    print(1)
+                    self.cur.execute("update hod set leave_array=leave_array||{} where dept='{}'".format(new_lid,dept))
                 if check1 =='DFA':
-                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='DFA'".format(data["leave_id"]))
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='DFA'".format(new_lid))
                 if check1 =='ADFA':
-                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='ADFA'".format(data["leave_id"]))
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='ADFA'".format(new_lid))
             else:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],10))
-                self.cur.execute("update director set leave_array=leave_array||{}".format(data["leave_id"]))
-            self.cur.execute("update const set leave_id=leave_id+1;")
+                self.cur.execute("update const set leave_id=leave_id+1;")
+                self.cur.execute("update director set leave_array=leave_array||{}".format(new_lid))
             return new_lid
     
     def change_leaves(self,data):
@@ -296,7 +304,7 @@ class psql:
 
         if data["dept"]=='DR':
             flag=self.cur.execute("select count(*) from director;")
-            flag=self.cur.fectchone()[0]
+            flag=self.cur.fetchone()[0]
             if flag==1:#replace condition
                 attributes=self.cur.execute("select * from director;")
                 attributes=self.cur.fetchone()
@@ -346,3 +354,34 @@ class psql:
             self.cur.execute("insert into ranks values(2,'ADFA');")
 
     # def leave_next_year(self,data):
+    def get_processed_leaves(self,eid):
+        li=[]
+        pos=self.get_position(eid)
+        if pos=='HOD':
+           # dept=self.get_result("select dept from employees where eid={}".format(eid))
+            li=self.get_result("select leave_array from hod where hod_id={}".format(eid))
+        if pos in ['DFA','ADFA'] :
+           # dept=self.get_result("select dean_type from dean where dean_id={}".format(eid))
+            li=self.get_result("select leave_array from dean where dean_id={}".format(eid))
+        if pos=='DR':
+            li=self.get_result("select leave_array from director where director_id={};".format(eid))
+        return li
+
+    def leaves_next_year(self,eid):
+        leaves_left=self.get_result("select leaves_left from employees where eid={};".format(eid))
+        leaves_per_year=self.get_result("select leaves_left from const where id<>0;")
+        if leaves_left>0:
+            return leaves_per_year
+        else:
+            return leaves_per_year+leaves_left
+
+    def get_leave_history(self,eid):
+        li=[]
+        res=self.cur.execute("select leave_id,leave_status,reason,start_leave,end_leave from leave_application where applicant_id={}".format(eid))
+        res=self.cur.fetch()
+        for x in res:
+            li.append(x)
+        return li
+
+
+    

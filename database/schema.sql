@@ -45,7 +45,7 @@ create table leave_application(
 	--administrate_id int,
     requested_state varchar(1) default 'n',
     --comment varchar(200),
-    leave_status varchar(1) default 'p',
+    leave_status varchar(1) default 'p'
 	--foreign key(administrate_id) references employees(eid),
 	--foreign key(applicant_id) references employees(eid)
 );

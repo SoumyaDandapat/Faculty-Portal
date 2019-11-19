@@ -253,10 +253,14 @@ class psql:
                 applicant_id=self.get_result("select applicant_id from leave_application where leave_id={}".format(leave_id))
                 self.cur.execute("update employees set leaves_left=leaves_left-{} where eid={}".format(ndays,applicant_id))
                 self.cur.execute("update leave_application set  leave_status='a' where leave_id={}".format(leave_id))
+                result='has accepted your application at '+str(time)
+                self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,self.get_position(eid),eid,result))
                 print("done")
             else:# next person
                 dept=self.get_result("select dept from employees where eid={}".format(eid))
                 self.cur.execute("update leave_application set position ={} where leave_id={}".format(next_position,leave_id))
+                result='has accepted your application and has forwarded it at '+str(time)
+                self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,self.get_position(eid),eid,result))
                 ftype=self.get_result("select type_of_faculty from ranks where rank= {}".format(next_position))
                 if ftype =='HOD':
                         self.cur.execute("update hod set leave_array=leave_array||{} where dept='{}'".format(leave_id,dept))
@@ -267,6 +271,8 @@ class psql:
 
         elif state==0:# rejected
             self.cur.excecute("update leave_application set  leave_status='r' where leave_id={}".format(applicant_id))
+            result=' has rejected your application at '+str(time)
+            self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,self.get_position(eid),eid,result))
         elif state==2:# requested comments
             self.add_comment(eid,leave_id,comment)
             

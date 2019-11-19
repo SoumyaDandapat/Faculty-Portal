@@ -108,6 +108,18 @@ create table employees_database(
     gender varchar(1), 
 );
 
+create table comments(
+    leave_id int,
+    dept varchar(10),
+    eid varchar(50) unique,
+    comments varchar(5),
+    time_stamp time,
+    date_stamp date,
+    -- FOREIGN key("leave") REFERENCES leave_application("leave_id")
+    -- FOREIGN key("eid") REFERENCES employees
+);
+
+
 create table director_database(
     director_id int,
 	start_time date,

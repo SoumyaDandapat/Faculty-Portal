@@ -38,13 +38,9 @@ class psql:
 
     def initializer(self):
 
-        
-        # self.cur.execute("DROP DATABASE dbms")
-        # self.conn.commit()
         try:
             self.cur.execute("CREATE TABLE employees(eid int,name varchar(50),pass varchar(50),gender varchar(1),dob date)")
             self.conn.commit()
-        #triggers and procedures for employees
         except:
             print(1)
         try:
@@ -53,11 +49,6 @@ class psql:
         except:
             print(2)
 
-        # trigger_statement="CREATE TRIGGER increment before INSERT ON eidmax \
-        #     for each row \
-        #     num=num+1;"
-        
-        # self.cur.execute(trigger_statement)
         try:    
             self.cur.execute("INSERT INTO eidmax values(0)")
             self.conn.commit()
@@ -80,7 +71,7 @@ class psql:
         
         ans=self.cur.execute("SELECT * FROM check_passwd(%s,%s)",(data["eid"],data["pass"]))
         ans=self.cur.fetchone()
-        print(ans)
+        # print(ans)
         if ans[0] == 'y':
             return True
         return False

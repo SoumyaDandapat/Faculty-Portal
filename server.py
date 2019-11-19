@@ -220,20 +220,50 @@ def application_status_history():
     else:
         lid=request.form["sub"]
         return redirect(url_for("dashboard"))
-    
-@app.route("/application_status",methods=["GET","POST"])
-def application_status():
+
+@app.route("/dashboard/application_processeed_history",methods=["GET"])
+def application_processed_history():
     if 'username' not in session:
         return redirect(url_for("login"))
     eid=session['username']
-    if request.method=="POST":
-        input=request.form.to_dict()
-        if "sub" in input:
-            lid=input["sub"]
-            data=pobj.get_leave_data(lid)
-            return render_template("leave_detail.html",data=data)
+    if pobj.isspecial(eid)==False:
+        return redirect(url_for("dashboard"))
+    # if request.method=="GET":
+    processed=pobj.get_processed_leaves(eid)
+    return render_template("leave_history",processed)
+   
+
+
+
+@app.route("/application_status/<num>",methods=["GET","POST"])
+def application_status(num):
+    num=int(num,10)
+    if 'username' not in session:
+        return redirect(url_for("login"))
+    eid=session['username']
+    if request.method=="GET":
+        res=pobj.iseligible(eid)
+        if res==False:
+            return redirect(url_for("application-proccesed_history"))
         else:
-            res=pobj.add_detail(input)
+            data=pobj.get_leave_data(eid,num)
+            return render_template("leave_details",data=data)
+    if request.method=="POST":
+        res=pobj.iseligible(eid)
+        if res==False:
+            return redirect(url_for("application-proccesed_history"))
+        else:
+            comment=""
+            state=2
+            input=request.form.to_dict()
+            if input["sub"]=="accept":
+                state=1
+            elif input["sub"]=="reject":
+                state=0
+            elif input["sub"]=="request-comments":
+                state=2
+                comment=input["comment"]
+            res=pobj.update_leave_data(eid,num,state,comment)        
             if(res):
                 flash("your previous operation was successfull")
                 return redirect(url_for("application_status_history"))

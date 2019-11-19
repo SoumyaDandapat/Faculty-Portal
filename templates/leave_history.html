@@ -27,7 +27,7 @@
                         {{application["edate"]}}
                     </div>                            
                 </div>
-                <span class="badge"  type="button" onclick="location.href='./leave/{{application["lid"]}}'">DETAILS
+                <span class="badge"  type="button" onclick="location.href='./application_status/{{application["lid"]}}'">DETAILS
                 </span>
             </li>
         </ul> 
@@ -61,7 +61,7 @@
                         {{application["edate"]}}
                     </div>                            
                 </div>
-                <span class="badge"  type="button" onclick="location.href='./leave/{{application["lid"]}}'">DETAILS
+                <span class="badge"  type="button" onclick="location.href='./application_status/{{application["lid"]}}'">DETAILS
                 </span>
             </li>
         </ul> 
@@ -97,7 +97,7 @@
                 </div>
                 <!-- <span class="badge"  type="sub" onclick="location.href='./leave/{{application["lid"]}}'">DETAILS
                 </span> -->
-                <input class="btn btn-primary" type="submit" name="sub" value= "{{application["lid"]}}" >
+                <input class="btn btn-primary" type="submit" name="sub" onclick="location.href='./application_status/{{application["lid"]}}'" >
 
             </li>
         </ul> 

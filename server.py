@@ -178,7 +178,7 @@ def admin():
                 return redirect(url_for("admin"))
         elif(input["submit"]=="route"):
             first=input["P1"]
-            second=input["p2"]
+            second=input["P2"]
             if(first==second):
                 second="NA"
             res=pobj.change_route(first,second)

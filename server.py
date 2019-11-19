@@ -267,10 +267,10 @@ def application_status(num):
         res=pobj.act_on_leave(eid,num,state,comment)        
         if(res):
             flash("your previous operation was successfull")
-            return redirect(url_for("application_status_history"))
+            return redirect(url_for("dashboard"))
         else:
             flash("your previous operation was not successfull")
-            return redirect(url_for("application_status_history"))
+            return redirect(url_for("dashboard"))
 
 
 

@@ -66,7 +66,7 @@ create table leave_database(
     start_leave date,
     reason varchar(200),
     leave_status varchar(1),
-   -- comments varchar(200),
+-- comments varchar(200),
 );
 
 create table director(

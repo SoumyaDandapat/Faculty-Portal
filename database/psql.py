@@ -101,16 +101,18 @@ class psql:
         flag=self.cur.execute("SELECT count(*) from leave_application where applicant_id={}".format(data["eid"]))
         flag=self.cur.fetchone()[0]
         #t=self.cur.execute("select {}-{};".format(data["edate"]),data["sdate"])
-        data["edate"]=str(data["edate"])
-        data["sdate"]=str(data["sdate"])
-        date_format = "%Y-%m-%d"
-        a = datetime.strptime(data["edate"], date_format)
-        b = datetime.strptime(data["sdate"], date_format)
-        # fecha_2 = datetime.strptime('22/01/2019 17:00', '%d/%m/%Y %H:%M')
-        # end_date=datetime.strptime(data["edate"], ' %Y-%m-%d')
-        # start_date=datetime.strptime(data["sdate"], ' %Y-%m-%d')
-        # temp=end_date-start_date
-        temp=b-a
+        temp=self.date_dif(data["sdate"],data["edate"])
+        
+        # data["edate"]=str(data["edate"])
+        # data["sdate"]=str(data["sdate"])
+        # date_format = "%Y-%m-%d"
+        # a = datetime.strptime(data["edate"], date_format)
+        # b = datetime.strptime(data["sdate"], date_format)
+        # # fecha_2 = datetime.strptime('22/01/2019 17:00', '%d/%m/%Y %H:%M')
+        # # end_date=datetime.strptime(data["edate"], ' %Y-%m-%d')
+        # # start_date=datetime.strptime(data["sdate"], ' %Y-%m-%d')
+        # # temp=end_date-start_date
+        # temp=b-a
         if leaves_left- temp.days < -leaves or flag==1:
             return -1
         else :

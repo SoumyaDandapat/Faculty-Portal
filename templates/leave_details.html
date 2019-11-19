@@ -7,68 +7,102 @@
        <div class="row">
            <div class="col-3-lg"></div>
            <div class="col-1-md">
-                Applier: {{data["name"]}}
-           </div>
+            <a href="/public/{{data["data"][5]}}">Applier: {{data["data"][5]}}</a> 
+                
+            </div>
        </div> 
        <div class="row">
         <div class="col-3-lg"></div>
         <div class="col-1-md">
-             start date: {{data["sdate"]}}
+             start date: {{data["data"][3]}}
         </div>
+       </div>
         <div class="row">
             <div class="col-3-lg"></div>
             <div class="col-1-md">
-                 end date: {{data["edate"]}}
+                 end date: {{data["data"][4]}}
             </div>
         </div> 
+    <!-- </div> -->
         <div class="row">
             <div class="col-3-lg"></div>
             <div class="col-1-md">
                  number of days: {{data["days"]}}
             </div>
         </div> 
+    <!-- </div> -->
         <div class="row">
             <div class="col-3-lg"></div>
             <div class="col-1-md">
-                 Status: {{data["status"]}}
+                 Status: {{data["data"][1]}}
             </div>
         </div> 
+    <!-- </div> -->
         <div class="row">
             <div class="col-3-lg"></div>
             <div class="col-1-md">
-                 Reason : {{data["reason"]}}
+                 Reason : {{data["data"][2]}}
             </div>
         </div> 
-    </div> 
+     
 </div> 
+<div class="row"></div>
+<hr><hr><br><br>
+<div class="row">
+        <div class="col-lg-2"></div>
+            <p1>
+                comment history:
+            </p1>
+
+        <!-- </div> -->
+    </div>
+
 
 <!--  -->
-{% for msg in messages %}
 
-<h1>
+{% for msg in data["msg"] %}
+<div class="row">
+<div class="col-lg-3"></div>
+<!-- <h1>
     {{msg["name"]}}
-</h1>
-
-<p1>
-    {{msg["message"]}}
-</p1>
-
+</h1> -->
+<div class="col-lg-1">
+{{if msg[1]!="F"}}
+<font  color="red">
+    msg[2] said msg[4] at msg[3]    
+</font>
+{% else %}
+<font  color="blue">
+    msg[2] said msg[4] at msg[3]    
+</font>
+{% endif %}
+    <br><hr><br>
+</div>
+</div>
 {% endfor %}
+<hr><hr>
+<br><br>
 <!--  -->
 <div class="row">
-    <div class="col-lg-3">
-        <h1>
-            Enter the clarification required
-        </h1>
+    <div class="col-lg-2"></div>
+        <p1>
+            {% if data["id"]==data["data"][5] %}
+            Enter the reply for the request
+            {% else %}
+            Enter the clarification you need
+            {% endif%}
+        </p1>
         <input type="text" name="comment" placeholder="leave empty if not required">
-    </div>
+    <!-- </div> -->
 </div>
 
 <form action="#" method="POST">
-    <input type="text" placeholder="enter what you would request the applicant">
+    <!-- <input type="text" placeholder="enter what you would request the applicant"> -->
+    {% if data["id"]!=data["data"][5] %}
     <input class="btn btn-primary" type="submit" name="sub" value="accept" style="background-color: blue;">
     <input  class="btn btn-primary" type="submit" name="sub" value="reject" style="background-color: blue;" >
-    <input class="btn btn-primary"  type="submit" name="sub" value="request-comments" style="background-color: blue;">
+    {% endif %}
+    <input class="btn btn-primary"  type="submit" name="sub" value="submit-comments" style="background-color: blue;">
 </form>
 
 

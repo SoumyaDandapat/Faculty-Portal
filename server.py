@@ -246,13 +246,13 @@ def application_status(num):
     if 'username' not in session:
         return redirect(url_for("login"))
     eid=session['username']
+    if(pobj.iseligible(eid,num)==False):
+        return redirect(url_for("dahboard"))
     if request.method=="GET":
-        res=pobj.get_position(eid)
-        if res==False:
-            return redirect(url_for("application-proccesed_history"))
-        else:
-            data=pobj.get_leave_data(eid,num)
-            return render_template("leave_details",data=data)
+        # res=pobj.get_position(eid)
+        data=pobj.get_leave_details(eid,num)
+        data["id"]=eid
+        return render_template("leave_details.html",data=data)
     if request.method=="POST":
         res=pobj.iseligible(eid)
         if res==False:

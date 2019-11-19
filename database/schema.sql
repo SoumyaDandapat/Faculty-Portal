@@ -22,7 +22,7 @@ create table hod
     dept varchar(20),
 	start_time date,
     end_time date,
-    leave_array int array,
+    -- leave_array int array,
     foreign key(hod_id) references employees(eid) 
 );
 
@@ -31,7 +31,7 @@ create table dean(
     dean_type varchar(40),
 	start_time date,
     end_time date,
-    leave_array int array,
+    -- leave_array int array,
     foreign key(dean_id) references employees(eid)
 );
 
@@ -45,7 +45,7 @@ create table leave_application(
 	--administrate_id int,
     requested_state varchar(1) default 'n',
     --comment varchar(200),
-    leave_status varchar(1) default 'p',
+    leave_status varchar(1) default 'p'
 	--foreign key(administrate_id) references employees(eid),
 	--foreign key(applicant_id) references employees(eid)
 );
@@ -65,7 +65,7 @@ create table leave_database(
     end_leave date,
     start_leave date,
     reason varchar(200),
-    leave_status varchar(1),
+    leave_status varchar(1)
 -- comments varchar(200),
 );
 
@@ -73,7 +73,7 @@ create table director(
     director_id int,
 	start_time date,
     end_time date,
-    leave_array int array,
+    -- leave_array int array,
     foreign key(director_id) references employees(eid)
 );
 

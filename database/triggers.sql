@@ -11,11 +11,11 @@ end if;
 return new;
 end $$ language plpgsql;
 
-create trigger insert_into_database
-after update
-on leave_application
-for each row
-execute procedure remove_application();
+-- create trigger insert_into_database
+-- after update
+-- on leave_application
+-- for each row
+-- execute procedure remove_application();
 
 create or replace function default_eid()
 returns trigger as

@@ -185,9 +185,16 @@ def admin():
         elif(input["submit"]=="route"):
             first=input["P1"]
             second=input["P2"]
-            if(first==second):
-                second="NA"
-            res=pobj.change_route(first,second)
+            # third=input["P#"]
+            
+            # if(first=="DR"):
+            #     second=third="NA"
+            # elif(second=="DR"):
+            #     third="NA"
+            # elif(first==second):
+            #     second="NA"
+            
+            res=pobj.change_route(first,second,third)
             if(res==False):
                 flash("your previuos attempt was unsuccesfull")
                 return redirect(url_for("admin"))
@@ -208,7 +215,7 @@ def new_application():
         input=request.form.to_dict()
         input["eid"]=eid
         res=pobj.apply_leave(input)
-        if(res):
+        if(res!=-1):
             flash("Applied successfully")
             return redirect(url_for("dashboard"))
         else:

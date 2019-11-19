@@ -114,18 +114,23 @@ class psql:
             flag3=self.cur.fetchone()[0]
             if flag2==0 and flag3==0:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],1))
+                self.cur.execute("update const set leave_id=leave_id+1;")
                 check1=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
                 check1=self.cur.fetchone()[0]
+                #print (check1)
+                dept=self.cur.execute("select dept from employees where eid={}".format(data["eid"]))
+                dept=self.cur.fetchone()[0]
                 if check1 =='HOD':
-                    self.cur.execute("update hod set leave_array=leave_array||{} where dept={}".format(data["leave_id"],data["dept"]))
+                    print(1)
+                    self.cur.execute("update hod set leave_array=leave_array||{} where dept='{}'".format(new_lid,dept))
                 if check1 =='DFA':
-                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='DFA'".format(data["leave_id"]))
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='DFA'".format(new_lid))
                 if check1 =='ADFA':
-                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='ADFA'".format(data["leave_id"]))
+                    self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='ADFA'".format(new_lid))
             else:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],10))
-                self.cur.execute("update director set leave_array=leave_array||{}".format(data["leave_id"]))
-            self.cur.execute("update const set leave_id=leave_id+1;")
+                self.cur.execute("update const set leave_id=leave_id+1;")
+                self.cur.execute("update director set leave_array=leave_array||{}".format(new_lid))
             return new_lid
     
     def change_leaves(self,data):
@@ -228,7 +233,7 @@ class psql:
 
         if data["dept"]=='DR':
             flag=self.cur.execute("select count(*) from director;")
-            flag=self.cur.fectchone()[0]
+            flag=self.cur.fetchone()[0]
             if flag==1:#replace condition
                 attributes=self.cur.execute("select * from director;")
                 attributes=self.cur.fetchone()

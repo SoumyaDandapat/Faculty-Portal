@@ -158,14 +158,29 @@ class psql:
         self.conn.commit()
         self.cur.execute("UPDATE const set leaves_left= {}".format(data["leaves"]))
 
-    def add_comment(self,data):
+    def add_comment(self,eid,leave_id,comments):
         self.conn.commit()
-        comment=self.cur.execute("SELECT comment from leave_application where leave_id=%s".format(data["leave_id"]))
-        comment=self.cur.fetchone()[0]
-        employee_name=self.cur.execute("SELECT name from employees where eid=%s",data["eid"])
-        employee_name=self.cur.fetchone()[0]
-        comment=comment+'&'+employee_name+data["new_comment"]
-        self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
+        dept=self.get_position(eid)
+        check_applicant=self.get_result("select count(*) from leave_application where leave_id={} and applicant_id={} ".format(leave_id,eid))
+        if check_applicant==0:
+            self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,dept,eid,comments))
+        else:
+            pos=self.get_result("select position from leave_application where leave_id={}".format(leave_id))
+            faculty_type=self.get_result("select type_of_faculty from ranks where rank = {}; ".format(pos))
+            #faculty_type=self.cur.fetchone()[0]
+            #print (check1)
+            if faculty_type =='HOD':
+                # print(1)
+                dept_type=self.get_result("select dept from employees where eid={}".format(eid))
+                receiver=self.get_result("select hod_id from hod where dept={}".format(dept_type))
+            if faculty_type =='DFA':
+                receiver=self.get_result("select dean_id from dean where dean_type='DFA'")
+            if faculty_type =='ADFA':
+                receiver=self.get_result("select dean_id from dean where dean_type='ADFA'")
+            if faculty_type =='DR':
+                receiver=self.get_result("select director_id from director")
+            
+        
 
     def get_position(self,eid):# 1 for hod, 2 for dean, 3 for director
         ishod=self.get_result("select count(*) from hod where hod_id={}".format(eid))
@@ -396,7 +411,8 @@ class psql:
 
     def get_leave_details(self,eid,leave_id):
         out={}
-        res=self.cur.execute("select leave_id,leave_status,reason,start_leave,end_leave,applicant_id from leave_application where leave_id={}".format(leave_id))
+        msg=[]
+        res=self.cur.execute("select leave_id,leave_status,reason,start_leave,end_leave,applicant_id,requested_state from leave_application where leave_id={}".format(leave_id))
         res=self.cur.fetchone()
         ###
         if eid == res[5]:   #applier has requested
@@ -404,8 +420,12 @@ class psql:
             msg=self.cur.fetchall()
         
         else:   #participant
-            msg=self.cur.execute("select * from comments where leave_id={} and dept='{}' sort by time_stamp;".format(leave_id,self.get_position(eid)))
-            msg=self.cur.fetchall()
+            output=self.cur.execute("select * from comments where leave_id={} and dept='{}' sort by time_stamp;".format(leave_id,self.get_position(eid)))
+            output=self.cur.fetchall()
+            for x in output:
+                x[2]=self.get_result("select name from employees where eid={}".format(x[2]))
+                msg.append(x)
+
         out["data"]=res
         out["msg"]=msg
         return out

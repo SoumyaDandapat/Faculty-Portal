@@ -114,7 +114,7 @@ create table comments(
     eid int ,
     time_stamp TIMESTAMP,
     comments varchar(200),
-    direction int
+    --direction int
     -- o for question
     -- 1 for answer
     -- FOREIGN key("leave") REFERENCES leave_application("leave_id")

@@ -1,6 +1,12 @@
 import psycopg2
 from datetime import datetime
+
+
 class psql:
+
+    def get_result(self,input):
+        ans=self.cur.excecute(input)
+        return ans[0] 
 
     def __init__(self):
         self.connect()
@@ -141,11 +147,31 @@ class psql:
         comment=comment+'&'+employee_name+data["new_comment"]
         self.cur.execute("update leave_application set comment=%s where leave_id=%s",comment,data["leave_id"])
 
-    def change_route(self,data):
-        return True
+    def get_position(self,eid):# 1 for hod, 2 for dean, 3 for director
+        ishod=self.get_result("select count(*) from hod where hod_id={}".format(eid))
+        if(ishod==1):
+            return 1
+        isdean=self.get_result("select count(*) from dean where dean_id={}".format(eid))
+        if(isdean==1):
+            return 2
+        isdir=self.get_result("select count(*) from director where director_id={}".format(eid))
+        if(isdir==1):
+            return 3
+        return 0
 
-    def act_on_leave(self,eid,leave_id,state):
-        self.conn.commit()
+
+    def act_on_leave(self,eid,leave_id,state,comment):      
+        
+        position=self.get_position(eid)
+        if(position==0):
+            return False
+        res=self.get_proccessed_leaves(eid)
+        if eid not in res:
+            return False
+
+        if state==1:
+            
+        
         time=self.cur.execute("select current_date;")
         time=self.cur.fetchone()[0]
         check_hod=self.cur.execute("select count(*) from hod where hod_id={}".format(eid))
@@ -201,7 +227,7 @@ class psql:
                 temp='DR'
                 self.cur.execute("INSERT into paper_trail(action_taken,time_stamp,position,id,lid) values(%s,%s,%s,%s,%s)",action,time,temp,eid,leave_id)
 
-    def promote(self,data):
+    def promote(self,data):# promoting individuals
         self.conn.commit()
         department=self.cur.execute("select dept from employees where eid={};".format(data["eid"]))
         department=self.cur.fetchone()[0]

@@ -21,6 +21,7 @@ class psql:
             
         except (Exception, psycopg2.DatabaseError) as error:
             print(error)
+
     def get_result(self,input):
         ans=self.cur.execute(input)
         ans=self.cur.fetchone()[0]
@@ -29,13 +30,13 @@ class psql:
 
     def insert(self,data):
         self.conn.commit()
-        new_eid=self.cur.execute("SELECT id from const where id<>0;")
-        new_eid =self.cur.fetchone() [0]
-        leaves=self.cur.execute("SELECT leaves_left from const where id<>0;")
-        leaves =self.cur.fetchone() [0]
+        new_eid=self.get_result("SELECT id from const where id<>0;")
+        #new_eid =self.cur.fetchone() [0]
+        leaves=self.get_result("SELECT leaves_left from const where id<>0;")
+        #leaves =self.cur.fetchone() [0]
         print(new_eid)
-        flag=self.cur.execute("SELECT COUNT(*) from employees where email='{}'".format(data["email"]))
-        flag=self.cur.fetchone()[0]
+        flag=self.get_result("SELECT COUNT(*) from employees where email='{}'".format(data["email"]))
+        #flag=self.cur.fetchone()[0]
         if flag==0: 
             tuple=(data["name"],new_eid,data["email"],data["dept"],data["pass"],data["gender"],data["dob"],leaves)
             print(tuple)
@@ -86,8 +87,8 @@ class psql:
         return False
 
     def get_leaves(self,data):
-        ans=self.cur.execute("select leaves_left from employees where eid={}".format(data))
-        ans=self.cur.fetchone()[0]
+        ans=self.get_result("select leaves_left from employees where eid={}".format(data))
+        # ans=self.cur.fetchone()[0]
         if ans < 0:
             return 0
         else:
@@ -116,7 +117,7 @@ class psql:
         # # start_date=datetime.strptime(data["sdate"], ' %Y-%m-%d')
         # # temp=end_date-start_date
         # temp=b-a
-        if leaves_left- temp.days < -leaves or flag==1:
+        if leaves_left- temp < -leaves or flag==1:
             return -1
         else :
             flag2=self.cur.execute("select count(*) from hod where hod_id={}".format(data["eid"]))
@@ -126,17 +127,17 @@ class psql:
             if flag2==0 and flag3==0:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],1))
                 self.cur.execute("update const set leave_id=leave_id+1;")
-                check1=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
-                check1=self.cur.fetchone()[0]
+                faculty_type=self.cur.execute("select type_of_faculty from ranks where rank = 1; ")
+                faculty_type=self.cur.fetchone()[0]
                 #print (check1)
                 dept=self.cur.execute("select dept from employees where eid={}".format(data["eid"]))
                 dept=self.cur.fetchone()[0]
-                if check1 =='HOD':
+                if faculty_type =='HOD':
                     print(1)
                     self.cur.execute("update hod set leave_array=leave_array||{} where dept='{}'".format(new_lid,dept))
-                if check1 =='DFA':
+                if faculty_type =='DFA':
                     self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='DFA'".format(new_lid))
-                if check1 =='ADFA':
+                if faculty_type =='ADFA':
                     self.cur.execute("update dean set leave_array=leave_array||{} where dean_type='ADFA'".format(new_lid))
             else:
                 self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],data["reason"],data["edate"],data["sdate"],10))
@@ -383,5 +384,21 @@ class psql:
             li.append(x)
         return li
 
+    def get_leave_details(self,eid,leave_id):
+        out={}
+        res=self.cur.execute("select leave_id,leave_status,reason,start_leave,end_leave,applicant_id from leave_application where leave_id={}".format(leave_id))
+        res=self.cur.fetchone()
+        ###
+        if eid == res[5]:   #applier has requested
+            msg=self.cur.execute("select * from comments where leave_id={} sort by time_stamp;".format(leave_id))
+            msg=self.cur.fetchall()
+        
+        else:   #participant
+            msg=self.cur.execute("select * from comments where leave_id={} and dept='{}' sort by time_stamp;".format(leave_id,self.get_position(eid)))
+            msg=self.cur.fetchall()
+        out["data"]=res
+        out["msg"]=msg
+        return out
 
-    
+        
+

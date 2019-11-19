@@ -400,11 +400,11 @@ class psql:
         res=self.cur.fetchone()
         ###
         if eid == res[5]:   #applier has requested
-            msg=self.cur.execute("select * from comments where leave_id={} sort by time_stamp;".format(leave_id))
+            msg=self.cur.execute("select * from comments where leave_id={} order by time_stamp;".format(leave_id))
             msg=self.cur.fetchall()
         
         else:   #participant
-            msg=self.cur.execute("select * from comments where leave_id={} and dept='{}' sort by time_stamp;".format(leave_id,self.get_position(eid)))
+            msg=self.cur.execute("select * from comments where leave_id={} and dept='{}' order by time_stamp;".format(leave_id,self.get_position(eid)))
             msg=self.cur.fetchall()
         out["data"]=res
         out["msg"]=msg
@@ -421,4 +421,7 @@ class psql:
             #     temp.append(x)
             li.append(res)
         return li
+
+    def iseligible(self,eid,leave_id):
+        return True
 

@@ -13,7 +13,7 @@ class psql:
         self.conn = None
         try:
             print('Connecting to the PostgreSQL database...')
-            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "Jon1114", host = "127.0.0.1", port = "5432")
+            self.conn = psycopg2.connect(database="dbms", user = "postgres",password = "postgres", host = "127.0.0.1", port = "5432")
             self.conn.autocommit = True
             self.cur=self.conn.cursor()
             # create a cursor
@@ -24,7 +24,6 @@ class psql:
     def get_result(self,input):
         ans=self.cur.execute(input)
         ans=self.cur.fetchone()[0]
-        # print(input)
         return ans
 
     def insert(self,data):
@@ -65,6 +64,16 @@ class psql:
             print(3)
 
     def clear_data(self):
+        self.cur.execute("delete from leave_application ")
+        self.conn.commit()
+        self.cur.execute("delete from ranks ")
+        self.conn.commit()
+        self.cur.execute("delete from hod ")
+        self.conn.commit()
+        self.cur.execute("delete from dean ")
+        self.conn.commit()
+        self.cur.execute("delete from director")
+        self.conn.commit()
         self.cur.execute("delete from const ")
         self.conn.commit()
         self.cur.execute("delete from employees")
@@ -116,7 +125,7 @@ class psql:
         # # start_date=datetime.strptime(data["sdate"], ' %Y-%m-%d')
         # # temp=end_date-start_date
         # temp=b-a
-        if leaves_left- temp.days < -leaves or flag==1:
+        if leaves_left- temp < -leaves or flag==1:
             return -1
         else :
             flag2=self.cur.execute("select count(*) from hod where hod_id={}".format(data["eid"]))
@@ -161,13 +170,13 @@ class psql:
         ishod=self.get_result("select count(*) from hod where hod_id={}".format(eid))
         if(ishod==1):
             return "HOD"
-        isdean=self.get_result("select count(*) from dean where dean_id={} and dean_type={}".format(eid,"DFA"))
+        isdean=self.get_result("select count(*) from dean where dean_id={} and dean_type='{}'".format(eid,"DFA"))
         if(isdean==1):
             return "DFA"
         isdir=self.get_result("select count(*) from director where director_id={}".format(eid))
         if(isdir==1):
             return "DR"
-        isadean=self.get_result("select count(*) from dean where director_id={} and dean_type={}".format(eid,"ADFA"))
+        isadean=self.get_result("select count(*) from dean where dean_id={} and dean_type='{}'".format(eid,"ADFA"))
         if(isdir==1):
             return "ADFA"
         return "F"
@@ -218,7 +227,7 @@ class psql:
         elif state==2:# requested comments
             time=self.get_result("SELECT now()")
             self.cur.excecute("update leave_application set value requested_state='y' where leave_id={}".format(applicant_id))
-            self.cur.execute("insert into comment values({},{},{},{},{})".format(leave_id,position,eid,time,comment))
+            self.cur.execute("insert into comment values({},{},{},{},'{}')".format(leave_id,position,eid,time,comment))
         return True
             
         
@@ -358,14 +367,14 @@ class psql:
         li=[]
         pos=self.get_position(eid)
         if pos=='HOD':
-           # dept=self.get_result("select dept from employees where eid={}".format(eid))
+        # dept=self.get_result("select dept from employees where eid={}".format(eid))
             li=self.get_result("select leave_array from hod where hod_id={}".format(eid))
         if pos in ['DFA','ADFA'] :
-           # dept=self.get_result("select dean_type from dean where dean_id={}".format(eid))
+        # dept=self.get_result("select dean_type from dean where dean_id={}".format(eid))
             li=self.get_result("select leave_array from dean where dean_id={}".format(eid))
         if pos=='DR':
             li=self.get_result("select leave_array from director where director_id={};".format(eid))
-        return li
+        return self.get_leave_list(li)
 
     def leaves_next_year(self,eid):
         leaves_left=self.get_result("select leaves_left from employees where eid={};".format(eid))
@@ -378,10 +387,21 @@ class psql:
     def get_leave_history(self,eid):
         li=[]
         res=self.cur.execute("select leave_id,leave_status,reason,start_leave,end_leave from leave_application where applicant_id={}".format(eid))
-        res=self.cur.fetch()
+        res=self.cur.fetchall()
         for x in res:
             li.append(x)
+        print("in calles", li,res)
         return li
 
+    def get_leave_list(self,lids):
+        li=[]
+        for y in lids:
+            # temp=[]
+            res=self.cur.execute("select leave_id,leave_status,reason,start_leave,end_leave from leave_application where leave_id={}".format(y))
+            res=self.cur.fetchone()
+            # for x in res:
+            #     temp.append(x)
+            li.append(res)
+        return li
 
     

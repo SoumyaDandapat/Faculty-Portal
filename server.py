@@ -115,7 +115,12 @@ def dashboard():
         eid=session['username']
         thisyear_leaves=pobj.get_leaves(eid)
         nextyear_leaves=pobj.leaves_next_year(eid)
-        return render_template("dashboard.html",thisyear=thisyear_leaves,nextyear=nextyear_leaves)
+        res=pobj.get_position(eid)
+        ans=True
+        print(res)
+        if res=="F":
+            ans=False
+        return render_template("dashboard.html",thisyear=thisyear_leaves,nextyear=nextyear_leaves,special=ans)
     else:
         return redirect(url_for("login"))
 
@@ -215,35 +220,34 @@ def application_status_history():
     if 'username' not in session:
         return redirect(url_for("login"))
     eid=session['username']
-    if request.method=="GET":
-        lis=pobj.get_leave_history(eid)
-        return render_template("leave_history.html",data=lis)
-    else:
-        lid=request.form["sub"]
-        return redirect(url_for("dashboard"))
+  
+    lis=pobj.get_leave_history(eid)
+    return render_template("leave_history.html",application=lis)
+   
 
 @app.route("/dashboard/application_processeed_history",methods=["GET"])
 def application_processed_history():
     if 'username' not in session:
         return redirect(url_for("login"))
     eid=session['username']
-    if pobj.get_position(eid)==0:
+    if pobj.get_position(eid)=="F":
         return redirect(url_for("dashboard"))
     # if request.method=="GET":
     processed=pobj.get_processed_leaves(eid)
-    return render_template("leave_history",processed)
+    # return "testing"
+    return render_template("leave_history.html",application=processed)
    
 
 
 
-@app.route("/application_status/<num>",methods=["GET","POST"])
+@app.route("/dashboard/application_status/<num>",methods=["GET","POST"])
 def application_status(num):
     num=int(num,10)
     if 'username' not in session:
         return redirect(url_for("login"))
     eid=session['username']
     if request.method=="GET":
-        res=pobj.iseligible(eid)
+        res=pobj.get_position(eid)
         if res==False:
             return redirect(url_for("application-proccesed_history"))
         else:

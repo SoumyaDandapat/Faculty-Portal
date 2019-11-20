@@ -257,14 +257,10 @@ class psql:
                 applicant_id=self.get_result("select applicant_id from leave_application where leave_id={}".format(leave_id))
                 self.cur.execute("update employees set leaves_left=leaves_left-{} where eid={}".format(ndays,applicant_id))
                 self.cur.execute("update leave_application set  leave_status='a' where leave_id={}".format(leave_id))
-                result='has accepted your application at '+str(time)
-                self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,self.get_position(eid),eid,result))
                 print("done")
             else:# next person
                 dept=self.get_result("select dept from employees where eid={}".format(eid))
                 self.cur.execute("update leave_application set position ={} where leave_id={}".format(next_position,leave_id))
-                result='has accepted your application and has forwarded it at '+str(time)
-                self.cur.execute("insert into comments values({},'{}',{},now(),'{}')".format(leave_id,self.get_position(eid),eid,result))
                 ftype=self.get_result("select type_of_faculty from ranks where rank= {}".format(next_position))
                 if ftype =='HOD':
                     self.cur.execute("insert into comments values({},'{}',{},now(),'recieved application request')".format(leave_id,ftype,self.get_eid_from_position("HOD",dept)))
@@ -344,7 +340,7 @@ class psql:
 
     def change_route(self,first,second):
         self.conn.commit()
-        self.cur.execute("delete from ranks where rank<>10;")
+        self.cur.execute("delete from ranks;")
         print (first,second)
         if first=='HOD':
             self.cur.execute("insert into ranks values(1,'HOD');")

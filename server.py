@@ -62,6 +62,12 @@ def public_personal_profile(num):
     result=nobj.get_data(query,private_content)
     return render_template("public_profile.html",dict=result)
 
+@app.route("/delete1/<num>")
+def delet1(num):
+    result=pobj.delete_one(int(num,10))
+    return redirect(url_for("public"))
+
+
 
 @app.route("/login",methods=["GET","POST"])
 def login():
@@ -104,8 +110,8 @@ def register_page():
 
 @app.route("/delete",methods=["GET","POST"])
 def delete():
-    nobj.clear_data()
-    pobj.clear_data()
+    # nobj.clear_data()
+    # # pobj.clear_data()
     return redirect(url_for("login"))
 
 
@@ -185,14 +191,19 @@ def admin():
         elif(input["submit"]=="route"):
             first=input["P1"]
             second=input["P2"]
-            # third=input["P#"]
+            third=input["P3"]
             
-            # if(first=="DR"):
-            #     second=third="NA"
-            # elif(second=="DR"):
-            #     third="NA"
-            # elif(first==second):
-            #     second="NA"
+            if(first=="DR"):
+                second="NA"
+                third="NA"
+            elif(second=="DR"):
+                third="NA"
+            elif(first==second):
+                second="NA"
+            if(first!="DR" and second!="DR" and third!="DR"):
+                first="DR"
+                second="NA"
+                third="NA"
             
             res=pobj.change_route(first,second,third)
             if(res==False):
@@ -201,6 +212,10 @@ def admin():
             else:
                 flash("your previuos attempt was succesfull")
                 return redirect(url_for("admin"))
+
+        elif(input["submit"]=="toggle"):
+            pobj.toggle_showing()
+            return redirect(url_for("admin"))
             
 
         

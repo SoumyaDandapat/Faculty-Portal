@@ -156,7 +156,8 @@ class psql:
                 if faculty_type =='ADFA':
                     self.cur.execute("insert into comments values({},'{}',{},now(),'recieved application request')".format(new_lid,faculty_type,self.get_eid_from_position("ADFA",dept)))
             else:
-                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],reason,data["edate"],data["sdate"],10))
+                pos=self.get_result("select rank from ranks where type_of_faculty='DR';")
+                self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],reason,data["edate"],data["sdate"],pos))
                 self.cur.execute("update const set leave_id=leave_id+1;")
                 self.cur.execute("insert into comments values({},'{}',{},now(),'recieved application request')".format(new_lid,"DR",self.get_eid_from_position("DR","NOUSE")))
                 # self.cur.execute("update director set leave_array=leave_array||{}".format(new_lid))
@@ -338,22 +339,18 @@ class psql:
                 self.cur.execute("insert into dean values({},'{}','{}','{}');".format(data["eid"],data["dept"],data["start_time"],data["end_time"]))
             return True
 
-    def change_route(self,first,second):
+    def change_route(self,first,second,third):
         self.conn.commit()
         self.cur.execute("delete from ranks;")
         print (first,second)
-        if first=='HOD':
-            self.cur.execute("insert into ranks values(1,'HOD');")
-        if first=='DFA':
-            self.cur.execute("insert into ranks values(1,'DFA');")
-        if first=='ADFA':
-            self.cur.execute("insert into ranks values(1,'ADFA');")
-        if second=='HOD':
-            self.cur.execute("insert into ranks values(2,'HOD');")
-        if second=='DFA':
-            self.cur.execute("insert into ranks values(2,'DFA');")
-        if second=='ADFA':
-            self.cur.execute("insert into ranks values(2,'ADFA');")
+        if first!='NA':
+            self.cur.execute("insert into ranks values(1,'{}');".format(first))
+        if second!='NA':
+            self.cur.execute("insert into ranks values(2,'{}');".format(second))
+        if third!='NA':
+            self.cur.execute("insert into ranks values(3,'{}');".format(third))
+
+        # self.cur.execute("insert into ranks values(3,'DR');")
 
     def get_processed_leaves(self,eid):
 
@@ -415,4 +412,33 @@ class psql:
 
     def iseligible(self,eid,leave_id):
         return True
+
+    def delete_employee(self,eid):
+        pos=self.get_position(eid)
+        if pos!='F':
+            return False
+        else:
+            attributes=self.cur.execute("select * from employees where eid={} ".format(eid))
+            attributes=self.cur.fetchone()
+            self.cur.execute("insert into employees_database values({},'{}','{}','{}','{}','{}')".format(attributes[0],attributes[0],attributes[1],attributes[3],attributes[4],attributes[5],attributes[6])) 
+            self.cur.execute("delete from employees where eid={}".format(eid))       
+            return True
+
+    def delete_hod(self,eid):
+        attributes=self.cur.execute("select * from hod where hod_id={}".format(eid))
+        attributes=self.cur.fetchone()
+        self.cur.execute("insert into hod_database values({},'{}','{}','{}')".format(attributes[0],attributes[1],attributes[2],attributes[3]))
+        self.cur.execute("delete from hod where hod_id={}".format(eid))
+
+    def delete_dean(self,eid):
+        attributes=self.cur.execute("select * from dean where dean_id={}".format(eid))
+        attributes=self.cur.fetchone()
+        self.cur.execute("insert into dean_database values({},'{}','{}','{}')".format(attributes[0],attributes[1],attributes[2],attributes[3]))
+        self.cur.execute("delete from dean where dean_id={}".format(eid))
+
+    def delete_director(self,eid):
+        attributes=self.cur.execute("select * from director;")
+        attributes=self.cur.fetchone()
+        self.cur.execute("insert into director_database values({},'{}','{}')".format(attributes[0],attributes[1],attributes[2],attributes[3]))
+        self.cur.execute("delete from director;")
 

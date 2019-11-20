@@ -194,7 +194,7 @@ def admin():
             # elif(first==second):
             #     second="NA"
             
-            res=pobj.change_route(first,second,third)
+            res=pobj.change_route(first,second)
             if(res==False):
                 flash("your previuos attempt was unsuccesfull")
                 return redirect(url_for("admin"))

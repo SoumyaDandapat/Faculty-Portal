@@ -144,7 +144,7 @@ class psql:
 
 
     def apply_leave(self,data):
-        self.conn.commit()
+        # self.conn.commit()
         new_lid=self.get_result("SELECT leave_id from const where id<>0;")
         leaves=self.get_result("SELECT leaves_left from const where id<>0;")
         leaves_left=self.get_result("SELECT leaves_left from employees where eid={};".format(data["eid"]))
@@ -159,6 +159,7 @@ class psql:
             else:
                 extra_days=days_leaves-leaves_left
         if leaves_left- days_leaves < -leaves or flag==1:
+            print("up")
             return -1
         else :
             if extra_days!=0:
@@ -182,9 +183,12 @@ class psql:
                     eid_at_pos1=self.get_eid_from_position(faculty_type,"nouse")
                 elif faculty_type =='ADFA':
                     eid_at_pos1=self.get_eid_from_position(faculty_type,"nouse")
-            
+                elif faculty_type =='DR':
+                    eid_at_pos1=self.get_eid_from_position(faculty_type,"nouse")
+
                 if(eid_at_pos1=="not-present"):
                     return -1
+                    print("down")
                 else:
                     self.cur.execute("insert into comments values({},'{}',{},now(),'$$recieved application request')".format(new_lid,faculty_type,eid_at_pos1))
                     self.cur.execute("insert into leave_application values({},{},'{}','{}','{}',{})".format(new_lid,data["eid"],reason,data["edate"],data["sdate"],1))
@@ -200,14 +204,14 @@ class psql:
             return new_lid
     
     def change_leaves(self,data):
-        self.conn.commit()
+        # self.conn.commit()
         self.cur.execute("UPDATE const set leaves_left= {}".format(data["leaves"]))
 
 
     def add_comment(self,eid,leave_id,comments):#checked
         if self.able_to_comment(leave_id,eid)==False:
             return False
-        self.conn.commit()
+        # self.conn.commit()
         dept=self.get_position(eid)
         check_applicant=self.get_result("select count(*) from leave_application where leave_id={} and applicant_id={} ".format(leave_id,eid))
         if check_applicant==0:#appplicant is not writing
@@ -309,7 +313,7 @@ class psql:
             
 
     def promote(self,data):# promoting individuals
-        self.conn.commit()
+        # self.conn.commit()
         department=self.cur.execute("select dept from employees where eid={};".format(data["eid"]))
         department=self.cur.fetchone()[0]
 
@@ -379,14 +383,14 @@ class psql:
         return "p"
 
     def change_route(self,first,second,third):
-        self.conn.commit()
+        # self.conn.commit()
         self.cur.execute("delete from ranks;")
         print (first,second,third)
         if first!='NA':
             self.cur.execute("insert into ranks values(1,'{}');".format(first))
         if second!='NA':
             self.cur.execute("insert into ranks values(2,'{}');".format(second))
-        if first!='NA':
+        if third!='NA':
             self.cur.execute("insert into ranks values(3,'{}');".format(third))
         
 

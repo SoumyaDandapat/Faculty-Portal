@@ -108,7 +108,7 @@ def register_page():
             flash("Kindly use a different email address")
             return redirect(url_for("register_page"))
 
-@app.route("/delete",methods=["GET","POST"])
+@app.route("/deletes",methods=["GET","POST"])
 def delete():
     # nobj.clear_data()
     # # pobj.clear_data()
@@ -192,7 +192,7 @@ def admin():
             first=input["P1"]
             second=input["P2"]
             third=input["P3"]
-            
+            print(first,second,third)
             if(first=="DR"):
                 second="NA"
                 third="NA"

@@ -469,3 +469,32 @@ class psql:
     def iseligible(self,eid,leave_id):
         return True
 
+    def delete_employee(self,eid):
+        pos=self.get_position(eid)
+        if pos!='F':
+            return False
+        else:
+            attributes=self.cur.execute("select * from employees where eid={} ".format(eid))
+            attributes=self.cur.fetchone()
+            self.cur.execute("insert into employees_database values({},'{}','{}','{}','{}','{}')".format(attributes[0],attributes[0],attributes[1],attributes[3],attributes[4],attributes[5],attributes[6])) 
+            self.cur.execute("delete from employees where eid={}".format(eid))       
+            return True
+
+    def delete_hod(self,eid):
+        attributes=self.cur.execute("select * from hod where hod_id={}".format(eid))
+        attributes=self.cur.fetchone()
+        self.cur.execute("insert into hod_database values({},'{}','{}','{}')".format(attributes[0],attributes[1],attributes[2],attributes[3]))
+        self.cur.execute("delete from hod where hod_id={}".format(eid))
+
+    def delete_dean(self,eid):
+        attributes=self.cur.execute("select * from dean where dean_id={}".format(eid))
+        attributes=self.cur.fetchone()
+        self.cur.execute("insert into dean_database values({},'{}','{}','{}')".format(attributes[0],attributes[1],attributes[2],attributes[3]))
+        self.cur.execute("delete from dean where dean_id={}".format(eid))
+
+    def delete_director(self,eid):
+        attributes=self.cur.execute("select * from director;")
+        attributes=self.cur.fetchone()
+        self.cur.execute("insert into director_database values({},'{}','{}')".format(attributes[0],attributes[1],attributes[2],attributes[3]))
+        self.cur.execute("delete from director;")
+

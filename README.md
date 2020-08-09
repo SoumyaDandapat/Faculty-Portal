@@ -11,3 +11,8 @@ How to run ?
 First create all the tables using the schema.sql present in the databse folder. Also run triggers.sql file present in the same directory.
 
 Then run "server.py" present in the root folder
+
+#Team members
+Nikhil and I worked on this.
+
+I worked on backend of the project and mostly on the database of the application.
